@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #232329 transparent;
+  }
+  *::-webkit-scrollbar { width: 5px; height: 5px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb { background: #232329; border-radius: 9999px; }
+  *::-webkit-scrollbar-thumb:hover { background: #2e2e38; }
+
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type='number'] { -moz-appearance: textfield; }
+
+  select option {
+    background-color: #1d1d24;
+    color: #f0f0f5;
+    padding: 8px 12px;
+  }
+  
+  select option:checked,
+  select option:hover {
+    background-color: #7c6aef;
+    color: #ffffff;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-bg-border bg-bg-raised shadow-card;
+  }
+  .input-field {
+    @apply w-full rounded-lg border border-bg-border bg-bg-overlay px-3 py-2 text-sm text-text-primary
+      outline-none placeholder:text-text-tertiary
+      focus:border-accent focus:ring-1 focus:ring-accent/20;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2
+      text-sm font-medium text-white hover:bg-accent-hover;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2
+      text-sm font-medium text-text-secondary hover:bg-bg-muted hover:text-text-primary;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-rose px-4 py-2
+      text-sm font-medium text-white hover:bg-rose/80;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-medium text-text-tertiary;
+  }
+  .table-head {
+    @apply px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-text-tertiary;
+  }
+  .table-head-right {
+    @apply px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-text-tertiary;
+  }
+  .table-cell {
+    @apply px-4 py-3 text-sm;
+  }
+}
