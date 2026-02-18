@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import Modal from '@/components/Modal';
-import { mockMeals } from '@/data/mock';
 import type { Meal } from '@/types';
 import { useAppIntl } from '@/hooks/useAppIntl';
+import { getRequest } from '@/utils/requests';
 
 const emptyForm: Omit<Meal, 'id'> = {
   name: '',
@@ -30,11 +30,19 @@ const FIELDS = [
 
 export default function Meals() {
   const { formatMessage, meals: mealsMessages, common } = useAppIntl();
-  const [meals, setMeals] = useState<Meal[]>(mockMeals);
+  const [meals, setMeals] = useState<Meal[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchMeals = async () => {
+      const data = await getRequest('meals');
+      setMeals(data);
+    };
+    fetchMeals();
+  }, []);
 
   const openCreate = () => {
     setEditId(null);
@@ -52,7 +60,9 @@ export default function Meals() {
   const handleSave = () => {
     if (!form.name.trim()) return;
     if (editId) {
-      setMeals((prev) => prev.map((m) => (m.id === editId ? { ...m, ...form } : m)));
+      setMeals((prev) =>
+        prev.map((m) => (m.id === editId ? { ...m, ...form } : m)),
+      );
     } else {
       setMeals((prev) => [{ ...form, id: crypto.randomUUID() }, ...prev]);
     }
@@ -72,7 +82,9 @@ export default function Meals() {
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-text-primary">{formatMessage(mealsMessages.title)}</h1>
+          <h1 className="text-lg font-semibold text-text-primary">
+            {formatMessage(mealsMessages.title)}
+          </h1>
         </div>
         <button onClick={openCreate} className="btn-primary">
           <Plus className="h-3.5 w-3.5" />
@@ -87,22 +99,40 @@ export default function Meals() {
             <thead>
               <tr className="border-b border-bg-border bg-bg-overlay">
                 <th className="table-head">{formatMessage(common.name)}</th>
-                <th className="table-head-right">{formatMessage(common.kcal)}</th>
-                <th className="table-head-right">{formatMessage(common.protein)}</th>
-                <th className="table-head-right">{formatMessage(common.carbs)}</th>
-                <th className="table-head-right">{formatMessage(common.fat)}</th>
-                <th className="table-head-right">{formatMessage(common.sugar)}</th>
-                <th className="table-head-right">{formatMessage(common.salt)}</th>
-                <th className="table-head-right">{formatMessage(common.fibre)}</th>
+                <th className="table-head-right">
+                  {formatMessage(common.kcal)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.protein)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.carbs)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.fat)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.sugar)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.salt)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.fibre)}
+                </th>
                 <th className="table-head-right w-20">
-                  <span className="sr-only">{formatMessage(common.actions)}</span>
+                  <span className="sr-only">
+                    {formatMessage(common.actions)}
+                  </span>
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-bg-border">
               {meals.map((m) => (
                 <tr key={m.id} className="hover:bg-bg-subtle/40">
-                  <td className="table-cell font-medium text-text-primary">{m.name}</td>
+                  <td className="table-cell font-medium text-text-primary">
+                    {m.name}
+                  </td>
                   <td className="table-cell text-right font-mono text-sm font-medium text-accent-text">
                     {Math.round(m.kcal)}
                   </td>
@@ -148,7 +178,15 @@ export default function Meals() {
       </div>
 
       {/* Form modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editId ? formatMessage(mealsMessages.editMeal) : formatMessage(mealsMessages.newMeal)}>
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={
+          editId
+            ? formatMessage(mealsMessages.editMeal)
+            : formatMessage(mealsMessages.newMeal)
+        }
+      >
         <div className="space-y-3.5">
           <div>
             <label className="label">{formatMessage(common.name)}</label>
@@ -165,7 +203,8 @@ export default function Meals() {
             {FIELDS.map((f) => (
               <div key={f.key}>
                 <label className="label">
-                  {f.label} <span className="text-text-tertiary/60">({f.unit})</span>
+                  {f.label}{' '}
+                  <span className="text-text-tertiary/60">({f.unit})</span>
                 </label>
                 <input
                   type="number"
@@ -180,20 +219,36 @@ export default function Meals() {
           </div>
 
           <div className="flex justify-end gap-2 pt-1">
-            <button onClick={() => setModalOpen(false)} className="btn-ghost">{formatMessage(common.cancel)}</button>
-            <button onClick={handleSave} className="btn-primary">{formatMessage(common.save)}</button>
+            <button onClick={() => setModalOpen(false)} className="btn-ghost">
+              {formatMessage(common.cancel)}
+            </button>
+            <button onClick={handleSave} className="btn-primary">
+              {formatMessage(common.save)}
+            </button>
           </div>
         </div>
       </Modal>
 
       {/* Delete confirm */}
-      <Modal open={deleteId !== null} onClose={() => setDeleteId(null)} title={formatMessage(common.delete)} width="sm">
+      <Modal
+        open={deleteId !== null}
+        onClose={() => setDeleteId(null)}
+        title={formatMessage(common.delete)}
+        width="sm"
+      >
         <p className="text-sm text-text-secondary">
           {formatMessage(common.confirmDelete)}
         </p>
         <div className="mt-4 flex justify-end gap-2">
-          <button onClick={() => setDeleteId(null)} className="btn-ghost">{formatMessage(common.cancel)}</button>
-          <button onClick={() => deleteId && handleDelete(deleteId)} className="btn-danger">{formatMessage(common.delete)}</button>
+          <button onClick={() => setDeleteId(null)} className="btn-ghost">
+            {formatMessage(common.cancel)}
+          </button>
+          <button
+            onClick={() => deleteId && handleDelete(deleteId)}
+            className="btn-danger"
+          >
+            {formatMessage(common.delete)}
+          </button>
         </div>
       </Modal>
     </div>

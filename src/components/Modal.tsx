@@ -28,7 +28,6 @@ export default function Modal({ open, onClose, title, children, width = 'md' }: 
       <div
         className={`relative z-10 w-full ${maxW} rounded-xl border border-bg-border bg-bg-raised shadow-modal`}
       >
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-bg-border px-5 py-3.5">
           <h2 className="text-sm font-semibold text-text-primary">{title}</h2>
           <button
@@ -39,7 +38,6 @@ export default function Modal({ open, onClose, title, children, width = 'md' }: 
           </button>
         </div>
 
-        {/* Body */}
         <div className="max-h-[70vh] overflow-y-auto px-5 py-4">{children}</div>
       </div>
     </div>
