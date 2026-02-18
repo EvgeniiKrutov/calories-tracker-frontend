@@ -23,7 +23,9 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   const pageTitle =
     nav.find((n) =>
-      n.to === '/' ? location.pathname === '/' : location.pathname.startsWith(n.to),
+      n.to === '/'
+        ? location.pathname === '/'
+        : location.pathname.startsWith(n.to),
     )?.labelKey ?? '';
 
   const getNavLabel = (labelKey: string) => {
@@ -80,7 +82,6 @@ export default function Layout({ children }: { children: ReactNode }) {
             ))}
           </div>
         </nav>
-
       </aside>
 
       {/* Content */}
@@ -96,14 +97,18 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-2">
             <Flame className="h-3.5 w-3.5 text-accent" />
             <span className="text-sm font-semibold text-text-primary">
-              {pageTitle ? getNavLabel(pageTitle) : formatMessage(common.appName)}
+              {pageTitle
+                ? getNavLabel(pageTitle)
+                : formatMessage(common.appName)}
             </span>
           </div>
         </header>
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[1600px] px-6 py-6 lg:px-10 lg:py-8">{children}</div>
+          <div className="mx-auto max-w-[1600px] px-6 py-6 lg:px-10 lg:py-8">
+            {children}
+          </div>
         </main>
       </div>
     </div>

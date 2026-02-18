@@ -9,7 +9,13 @@ interface ModalProps {
   width?: 'sm' | 'md';
 }
 
-export default function Modal({ open, onClose, title, children, width = 'md' }: ModalProps) {
+export default function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  width = 'md',
+}: ModalProps) {
   useEffect(() => {
     if (open) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';

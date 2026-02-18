@@ -40,7 +40,11 @@ const tooltipStyle = {
   cursor: false,
 };
 
-const axisStyle = { fill: '#5a5a6e', fontSize: 11, fontFamily: 'JetBrains Mono' };
+const axisStyle = {
+  fill: '#5a5a6e',
+  fontSize: 11,
+  fontFamily: 'JetBrains Mono',
+};
 
 const emptyRecordForm: Omit<NutritionRecord, 'id'> = {
   mealName: '',
@@ -69,7 +73,7 @@ const FIELDS = [
 
 export default function Dashboard() {
   const { formatMessage, dashboard, common } = useAppIntl();
-  
+
   const [limits, setLimits] = useState({
     kcal: 2200,
     saturatedFat: 70,
@@ -78,40 +82,46 @@ export default function Dashboard() {
   });
   const [limitsModalOpen, setLimitsModalOpen] = useState(false);
   const [limitsForm, setLimitsForm] = useState(limits);
-  
+
   const [recordModalOpen, setRecordModalOpen] = useState(false);
   const [recordForm, setRecordForm] = useState(emptyRecordForm);
-  
+
   const openRecordModal = () => {
-    setRecordForm({ ...emptyRecordForm, date: new Date().toISOString().slice(0, 16) });
+    setRecordForm({
+      ...emptyRecordForm,
+      date: new Date().toISOString().slice(0, 16),
+    });
     setRecordModalOpen(true);
   };
-  
+
   const saveRecord = () => {
     // In a real app, this would save to a backend or state management
     console.log('Saving record:', recordForm);
     setRecordModalOpen(false);
   };
-  
+
   const setRecordField = (key: string, val: string | number) =>
     setRecordForm((p) => ({ ...p, [key]: val }));
-  
+
   const openLimitsModal = () => {
     setLimitsForm(limits);
     setLimitsModalOpen(true);
   };
-  
+
   const saveLimits = () => {
     setLimits(limitsForm);
     setLimitsModalOpen(false);
   };
-  
+
   const dailyData = useMemo(() => {
-    const grouped: Record<string, { kcal: number; protein: number; carb: number; fat: number }> =
-      {};
+    const grouped: Record<
+      string,
+      { kcal: number; protein: number; carb: number; fat: number }
+    > = {};
     mockRecords.forEach((r) => {
       const day = r.date.slice(0, 10);
-      if (!grouped[day]) grouped[day] = { kcal: 0, protein: 0, carb: 0, fat: 0 };
+      if (!grouped[day])
+        grouped[day] = { kcal: 0, protein: 0, carb: 0, fat: 0 };
       grouped[day].kcal += r.kcal;
       grouped[day].protein += r.protein;
       grouped[day].carb += r.carb;
@@ -120,7 +130,9 @@ export default function Dashboard() {
     return Object.entries(grouped)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, v]) => ({
-        date: new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' }).replace('/', '.'),
+        date: new Date(date)
+          .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })
+          .replace('/', '.'),
         kcal: Math.round(v.kcal),
         protein: Math.round(v.protein),
         carb: Math.round(v.carb),
@@ -130,8 +142,10 @@ export default function Dashboard() {
 
   const categoryData = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
-    const todayRecords = mockRecords.filter(r => r.date.slice(0, 10) === today);
-    
+    const todayRecords = mockRecords.filter(
+      (r) => r.date.slice(0, 10) === today,
+    );
+
     return todayRecords.reduce(
       (acc, r) => ({
         kcal: acc.kcal + r.kcal,
@@ -140,12 +154,15 @@ export default function Dashboard() {
         fat: acc.fat + r.fat,
         salt: acc.salt + r.salt,
       }),
-      { kcal: 0, protein: 0, carb: 0, fat: 0, salt: 0 }
+      { kcal: 0, protein: 0, carb: 0, fat: 0, salt: 0 },
     );
   }, []);
 
   const unhealthyData = useMemo(() => {
-    const grouped: Record<string, { saturatedFat: number; sugar: number; salt: number }> = {};
+    const grouped: Record<
+      string,
+      { saturatedFat: number; sugar: number; salt: number }
+    > = {};
     mockRecords.forEach((r) => {
       const day = r.date.slice(0, 10);
       if (!grouped[day]) grouped[day] = { saturatedFat: 0, sugar: 0, salt: 0 };
@@ -156,7 +173,9 @@ export default function Dashboard() {
     return Object.entries(grouped)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, v]) => ({
-        date: new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' }).replace('/', '.'),
+        date: new Date(date)
+          .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })
+          .replace('/', '.'),
         saturatedFat: Math.round(v.saturatedFat * 10) / 10,
         sugar: Math.round(v.sugar * 10) / 10,
         salt: Math.round(v.salt * 10) / 10,
@@ -190,7 +209,9 @@ export default function Dashboard() {
     <div className="space-y-5">
       {/* Header */}
       <div>
-        <h1 className="text-lg font-semibold text-text-primary">{formatMessage(dashboard.title)}</h1>
+        <h1 className="text-lg font-semibold text-text-primary">
+          {formatMessage(dashboard.title)}
+        </h1>
       </div>
 
       {/* Charts — row 1 */}
@@ -203,13 +224,18 @@ export default function Dashboard() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.kcal}18`, color: COLORS.kcal }}
+                  style={{
+                    backgroundColor: `${COLORS.kcal}18`,
+                    color: COLORS.kcal,
+                  }}
                 >
                   <Flame className="h-4 w-4" />
                 </div>
-                <span className="text-sm text-text-secondary">{formatMessage(common.calories)}</span>
+                <span className="text-sm text-text-secondary">
+                  {formatMessage(common.calories)}
+                </span>
               </div>
               <span className="font-mono text-xl font-bold text-text-primary">
                 {Math.round(categoryData.kcal)}
@@ -218,61 +244,93 @@ export default function Dashboard() {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.protein}18`, color: COLORS.protein }}
+                  style={{
+                    backgroundColor: `${COLORS.protein}18`,
+                    color: COLORS.protein,
+                  }}
                 >
                   <Beef className="h-4 w-4" />
                 </div>
-                <span className="text-sm text-text-secondary">{formatMessage(common.protein)}</span>
+                <span className="text-sm text-text-secondary">
+                  {formatMessage(common.protein)}
+                </span>
               </div>
               <span className="font-mono text-xl font-bold text-text-primary">
-                {Math.round(categoryData.protein)}<span className="text-sm text-text-tertiary ml-1">{formatMessage(common.grams)}</span>
+                {Math.round(categoryData.protein)}
+                <span className="text-sm text-text-tertiary ml-1">
+                  {formatMessage(common.grams)}
+                </span>
               </span>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.carb}18`, color: COLORS.carb }}
+                  style={{
+                    backgroundColor: `${COLORS.carb}18`,
+                    color: COLORS.carb,
+                  }}
                 >
                   <Wheat className="h-4 w-4" />
                 </div>
-                <span className="text-sm text-text-secondary">{formatMessage(common.carbs)}</span>
+                <span className="text-sm text-text-secondary">
+                  {formatMessage(common.carbs)}
+                </span>
               </div>
               <span className="font-mono text-xl font-bold text-text-primary">
-                {Math.round(categoryData.carb)}<span className="text-sm text-text-tertiary ml-1">{formatMessage(common.grams)}</span>
+                {Math.round(categoryData.carb)}
+                <span className="text-sm text-text-tertiary ml-1">
+                  {formatMessage(common.grams)}
+                </span>
               </span>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.fat}18`, color: COLORS.fat }}
+                  style={{
+                    backgroundColor: `${COLORS.fat}18`,
+                    color: COLORS.fat,
+                  }}
                 >
                   <Droplets className="h-4 w-4" />
                 </div>
-                <span className="text-sm text-text-secondary">{formatMessage(common.fat)}</span>
+                <span className="text-sm text-text-secondary">
+                  {formatMessage(common.fat)}
+                </span>
               </div>
               <span className="font-mono text-xl font-bold text-text-primary">
-                {Math.round(categoryData.fat)}<span className="text-sm text-text-tertiary ml-1">{formatMessage(common.grams)}</span>
+                {Math.round(categoryData.fat)}
+                <span className="text-sm text-text-tertiary ml-1">
+                  {formatMessage(common.grams)}
+                </span>
               </span>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.salt}18`, color: COLORS.salt }}
+                  style={{
+                    backgroundColor: `${COLORS.salt}18`,
+                    color: COLORS.salt,
+                  }}
                 >
                   <Droplets className="h-4 w-4" />
                 </div>
-                <span className="text-sm text-text-secondary">{formatMessage(common.salt)}</span>
+                <span className="text-sm text-text-secondary">
+                  {formatMessage(common.salt)}
+                </span>
               </div>
               <span className="font-mono text-xl font-bold text-text-primary">
-                {(categoryData.salt).toFixed(1)}<span className="text-sm text-text-tertiary ml-1">{formatMessage(common.grams)}</span>
+                {categoryData.salt.toFixed(1)}
+                <span className="text-sm text-text-tertiary ml-1">
+                  {formatMessage(common.grams)}
+                </span>
               </span>
             </div>
           </div>
@@ -294,13 +352,18 @@ export default function Dashboard() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.kcal}18`, color: COLORS.kcal }}
+                  style={{
+                    backgroundColor: `${COLORS.kcal}18`,
+                    color: COLORS.kcal,
+                  }}
                 >
                   <Flame className="h-4 w-4" />
                 </div>
-                <span className="text-sm text-text-secondary">{formatMessage(common.calories)}</span>
+                <span className="text-sm text-text-secondary">
+                  {formatMessage(common.calories)}
+                </span>
               </div>
               <span className="font-mono text-xl font-bold text-text-primary">
                 {limits.kcal}
@@ -309,46 +372,70 @@ export default function Dashboard() {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.saturatedFat}18`, color: COLORS.saturatedFat }}
+                  style={{
+                    backgroundColor: `${COLORS.saturatedFat}18`,
+                    color: COLORS.saturatedFat,
+                  }}
                 >
                   <Droplets className="h-4 w-4" />
                 </div>
-                <span className="text-sm text-text-secondary">{formatMessage(common.saturatedFat)}</span>
+                <span className="text-sm text-text-secondary">
+                  {formatMessage(common.saturatedFat)}
+                </span>
               </div>
               <span className="font-mono text-xl font-bold text-text-primary">
-                {limits.saturatedFat}<span className="text-sm text-text-tertiary ml-1">{formatMessage(common.grams)}</span>
+                {limits.saturatedFat}
+                <span className="text-sm text-text-tertiary ml-1">
+                  {formatMessage(common.grams)}
+                </span>
               </span>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.sugar}18`, color: COLORS.sugar }}
+                  style={{
+                    backgroundColor: `${COLORS.sugar}18`,
+                    color: COLORS.sugar,
+                  }}
                 >
                   <Droplets className="h-4 w-4" />
                 </div>
-                <span className="text-sm text-text-secondary">{formatMessage(common.sugar)}</span>
+                <span className="text-sm text-text-secondary">
+                  {formatMessage(common.sugar)}
+                </span>
               </div>
               <span className="font-mono text-xl font-bold text-text-primary">
-                {limits.sugar}<span className="text-sm text-text-tertiary ml-1">{formatMessage(common.grams)}</span>
+                {limits.sugar}
+                <span className="text-sm text-text-tertiary ml-1">
+                  {formatMessage(common.grams)}
+                </span>
               </span>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.salt}18`, color: COLORS.salt }}
+                  style={{
+                    backgroundColor: `${COLORS.salt}18`,
+                    color: COLORS.salt,
+                  }}
                 >
                   <Droplets className="h-4 w-4" />
                 </div>
-                <span className="text-sm text-text-secondary">{formatMessage(common.salt)}</span>
+                <span className="text-sm text-text-secondary">
+                  {formatMessage(common.salt)}
+                </span>
               </div>
               <span className="font-mono text-xl font-bold text-text-primary">
-                {limits.salt}<span className="text-sm text-text-tertiary ml-1">{formatMessage(common.grams)}</span>
+                {limits.salt}
+                <span className="text-sm text-text-tertiary ml-1">
+                  {formatMessage(common.grams)}
+                </span>
               </span>
             </div>
           </div>
@@ -364,11 +451,23 @@ export default function Dashboard() {
               <AreaChart data={dailyData}>
                 <defs>
                   <linearGradient id="kcalGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={COLORS.kcal} stopOpacity={0.4} />
-                    <stop offset="100%" stopColor={COLORS.kcal} stopOpacity={0} />
+                    <stop
+                      offset="0%"
+                      stopColor={COLORS.kcal}
+                      stopOpacity={0.4}
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor={COLORS.kcal}
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="#1a1a20" strokeDasharray="none" vertical={false} />
+                <CartesianGrid
+                  stroke="#1a1a20"
+                  strokeDasharray="none"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="date"
                   tick={axisStyle}
@@ -382,7 +481,13 @@ export default function Dashboard() {
                   width={42}
                 />
                 <Tooltip {...tooltipStyle} />
-                <ReferenceLine y={limits.kcal} stroke="#ef4444" strokeWidth={1.5} strokeDasharray="0" label="" />
+                <ReferenceLine
+                  y={limits.kcal}
+                  stroke="#ef4444"
+                  strokeWidth={1.5}
+                  strokeDasharray="0"
+                  label=""
+                />
                 <Area
                   type="monotone"
                   dataKey="kcal"
@@ -408,12 +513,30 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={unhealthyData}>
                 <defs>
-                  <linearGradient id="saturatedFatGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={COLORS.saturatedFat} stopOpacity={0.4} />
-                    <stop offset="100%" stopColor={COLORS.saturatedFat} stopOpacity={0} />
+                  <linearGradient
+                    id="saturatedFatGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="0%"
+                      stopColor={COLORS.saturatedFat}
+                      stopOpacity={0.4}
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor={COLORS.saturatedFat}
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="#1a1a20" strokeDasharray="none" vertical={false} />
+                <CartesianGrid
+                  stroke="#1a1a20"
+                  strokeDasharray="none"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="date"
                   tick={axisStyle}
@@ -427,7 +550,13 @@ export default function Dashboard() {
                   width={36}
                 />
                 <Tooltip {...tooltipStyle} />
-                <ReferenceLine y={limits.saturatedFat} stroke="#ef4444" strokeWidth={1.5} strokeDasharray="0" label="" />
+                <ReferenceLine
+                  y={limits.saturatedFat}
+                  stroke="#ef4444"
+                  strokeWidth={1.5}
+                  strokeDasharray="0"
+                  label=""
+                />
                 <Area
                   type="monotone"
                   dataKey="saturatedFat"
@@ -450,12 +579,30 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={unhealthyData}>
                 <defs>
-                  <linearGradient id="sugarGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={COLORS.sugar} stopOpacity={0.4} />
-                    <stop offset="100%" stopColor={COLORS.sugar} stopOpacity={0} />
+                  <linearGradient
+                    id="sugarGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="0%"
+                      stopColor={COLORS.sugar}
+                      stopOpacity={0.4}
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor={COLORS.sugar}
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="#1a1a20" strokeDasharray="none" vertical={false} />
+                <CartesianGrid
+                  stroke="#1a1a20"
+                  strokeDasharray="none"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="date"
                   tick={axisStyle}
@@ -469,7 +616,13 @@ export default function Dashboard() {
                   width={36}
                 />
                 <Tooltip {...tooltipStyle} />
-                <ReferenceLine y={limits.sugar} stroke="#ef4444" strokeWidth={1.5} strokeDasharray="0" label="" />
+                <ReferenceLine
+                  y={limits.sugar}
+                  stroke="#ef4444"
+                  strokeWidth={1.5}
+                  strokeDasharray="0"
+                  label=""
+                />
                 <Area
                   type="monotone"
                   dataKey="sugar"
@@ -493,11 +646,23 @@ export default function Dashboard() {
               <AreaChart data={unhealthyData}>
                 <defs>
                   <linearGradient id="saltGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={COLORS.salt} stopOpacity={0.4} />
-                    <stop offset="100%" stopColor={COLORS.salt} stopOpacity={0} />
+                    <stop
+                      offset="0%"
+                      stopColor={COLORS.salt}
+                      stopOpacity={0.4}
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor={COLORS.salt}
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="#1a1a20" strokeDasharray="none" vertical={false} />
+                <CartesianGrid
+                  stroke="#1a1a20"
+                  strokeDasharray="none"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="date"
                   tick={axisStyle}
@@ -511,7 +676,13 @@ export default function Dashboard() {
                   width={36}
                 />
                 <Tooltip {...tooltipStyle} />
-                <ReferenceLine y={limits.salt} stroke="#ef4444" strokeWidth={1.5} strokeDasharray="0" label="" />
+                <ReferenceLine
+                  y={limits.salt}
+                  stroke="#ef4444"
+                  strokeWidth={1.5}
+                  strokeDasharray="0"
+                  label=""
+                />
                 <Area
                   type="monotone"
                   dataKey="salt"
@@ -527,9 +698,9 @@ export default function Dashboard() {
       </div>
 
       {/* Limits Modal */}
-      <Modal 
-        open={limitsModalOpen} 
-        onClose={() => setLimitsModalOpen(false)} 
+      <Modal
+        open={limitsModalOpen}
+        onClose={() => setLimitsModalOpen(false)}
         title={formatMessage(dashboard.editLimits)}
       >
         <div className="space-y-3.5">
@@ -539,62 +710,97 @@ export default function Dashboard() {
 
           <div>
             <label className="label">
-              {formatMessage(common.calories)} <span className="text-text-tertiary/60">({formatMessage(common.kcal)})</span>
+              {formatMessage(common.calories)}{' '}
+              <span className="text-text-tertiary/60">
+                ({formatMessage(common.kcal)})
+              </span>
             </label>
             <input
               type="number"
               step="1"
               min="0"
               value={limitsForm.kcal}
-              onChange={(e) => setLimitsForm({ ...limitsForm, kcal: parseFloat(e.target.value) || 0 })}
+              onChange={(e) =>
+                setLimitsForm({
+                  ...limitsForm,
+                  kcal: parseFloat(e.target.value) || 0,
+                })
+              }
               className="input-field font-mono"
             />
           </div>
 
           <div>
             <label className="label">
-              {formatMessage(common.saturatedFat)} <span className="text-text-tertiary/60">({formatMessage(common.grams)})</span>
+              {formatMessage(common.saturatedFat)}{' '}
+              <span className="text-text-tertiary/60">
+                ({formatMessage(common.grams)})
+              </span>
             </label>
             <input
               type="number"
               step="0.1"
               min="0"
               value={limitsForm.saturatedFat}
-              onChange={(e) => setLimitsForm({ ...limitsForm, saturatedFat: parseFloat(e.target.value) || 0 })}
+              onChange={(e) =>
+                setLimitsForm({
+                  ...limitsForm,
+                  saturatedFat: parseFloat(e.target.value) || 0,
+                })
+              }
               className="input-field font-mono"
             />
           </div>
 
           <div>
             <label className="label">
-              {formatMessage(common.sugar)} <span className="text-text-tertiary/60">({formatMessage(common.grams)})</span>
+              {formatMessage(common.sugar)}{' '}
+              <span className="text-text-tertiary/60">
+                ({formatMessage(common.grams)})
+              </span>
             </label>
             <input
               type="number"
               step="0.1"
               min="0"
               value={limitsForm.sugar}
-              onChange={(e) => setLimitsForm({ ...limitsForm, sugar: parseFloat(e.target.value) || 0 })}
+              onChange={(e) =>
+                setLimitsForm({
+                  ...limitsForm,
+                  sugar: parseFloat(e.target.value) || 0,
+                })
+              }
               className="input-field font-mono"
             />
           </div>
 
           <div>
             <label className="label">
-              {formatMessage(common.salt)} <span className="text-text-tertiary/60">({formatMessage(common.grams)})</span>
+              {formatMessage(common.salt)}{' '}
+              <span className="text-text-tertiary/60">
+                ({formatMessage(common.grams)})
+              </span>
             </label>
             <input
               type="number"
               step="0.1"
               min="0"
               value={limitsForm.salt}
-              onChange={(e) => setLimitsForm({ ...limitsForm, salt: parseFloat(e.target.value) || 0 })}
+              onChange={(e) =>
+                setLimitsForm({
+                  ...limitsForm,
+                  salt: parseFloat(e.target.value) || 0,
+                })
+              }
               className="input-field font-mono"
             />
           </div>
 
           <div className="flex justify-end gap-2 pt-1">
-            <button onClick={() => setLimitsModalOpen(false)} className="btn-ghost">
+            <button
+              onClick={() => setLimitsModalOpen(false)}
+              className="btn-ghost"
+            >
               {formatMessage(common.cancel)}
             </button>
             <button onClick={saveLimits} className="btn-primary">
@@ -613,9 +819,9 @@ export default function Dashboard() {
       </button>
 
       {/* Record Modal */}
-      <Modal 
-        open={recordModalOpen} 
-        onClose={() => setRecordModalOpen(false)} 
+      <Modal
+        open={recordModalOpen}
+        onClose={() => setRecordModalOpen(false)}
         title={formatMessage(dashboard.title)}
       >
         <div className="space-y-3.5">
@@ -637,9 +843,15 @@ export default function Dashboard() {
 
           <div>
             <label className="label">Category</label>
-            <select value={recordForm.category} onChange={(e) => setRecordField('category', e.target.value)} className="input-field">
+            <select
+              value={recordForm.category}
+              onChange={(e) => setRecordField('category', e.target.value)}
+              className="input-field"
+            >
               {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
             </select>
           </div>
@@ -658,14 +870,17 @@ export default function Dashboard() {
             {FIELDS.map((f) => (
               <div key={f.key}>
                 <label className="label">
-                  {f.label} <span className="text-text-tertiary/60">({f.unit})</span>
+                  {f.label}{' '}
+                  <span className="text-text-tertiary/60">({f.unit})</span>
                 </label>
                 <input
                   type="number"
                   step="0.1"
                   min="0"
                   value={recordForm[f.key]}
-                  onChange={(e) => setRecordField(f.key, parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    setRecordField(f.key, parseFloat(e.target.value) || 0)
+                  }
                   className="input-field font-mono"
                 />
               </div>
@@ -673,7 +888,10 @@ export default function Dashboard() {
           </div>
 
           <div className="flex justify-end gap-2 pt-1">
-            <button onClick={() => setRecordModalOpen(false)} className="btn-ghost">
+            <button
+              onClick={() => setRecordModalOpen(false)}
+              className="btn-ghost"
+            >
               {formatMessage(common.cancel)}
             </button>
             <button onClick={saveRecord} className="btn-primary">

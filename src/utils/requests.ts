@@ -8,5 +8,5 @@ export const getRequest = async (url: string) => {
 
   const data = await response.json();
 
-  return data
+  return data;
 };

@@ -55,12 +55,18 @@ export default function Records() {
     if (editId) {
       setRecords((prev) =>
         prev.map((r) =>
-          r.id === editId ? { ...r, ...form, date: new Date(form.date).toISOString() } : r,
+          r.id === editId
+            ? { ...r, ...form, date: new Date(form.date).toISOString() }
+            : r,
         ),
       );
     } else {
       setRecords((prev) => [
-        { ...form, id: crypto.randomUUID(), date: new Date(form.date).toISOString() },
+        {
+          ...form,
+          id: crypto.randomUUID(),
+          date: new Date(form.date).toISOString(),
+        },
         ...prev,
       ]);
     }
@@ -76,17 +82,26 @@ export default function Records() {
     setForm((p) => ({ ...p, [key]: val }));
 
   const fmtDate = (iso: string) =>
-    new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    new Date(iso).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
 
   const fmtTime = (iso: string) =>
-    new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    new Date(iso).toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
   return (
     <div className="space-y-5">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-text-primary">{formatMessage(recordsMessages.title)}</h1>
+          <h1 className="text-lg font-semibold text-text-primary">
+            {formatMessage(recordsMessages.title)}
+          </h1>
         </div>
         <button onClick={openCreate} className="btn-primary">
           <Plus className="h-3.5 w-3.5" />
@@ -101,16 +116,34 @@ export default function Records() {
             <thead>
               <tr className="border-b border-bg-border bg-bg-overlay">
                 <th className="table-head">{formatMessage(common.date)}</th>
-                <th className="table-head">{formatMessage(recordsMessages.meal)}</th>
-                <th className="table-head-right">{formatMessage(common.kcal)}</th>
-                <th className="table-head-right">{formatMessage(common.protein)}</th>
-                <th className="table-head-right">{formatMessage(common.carbs)}</th>
-                <th className="table-head-right">{formatMessage(common.fat)}</th>
-                <th className="table-head-right">{formatMessage(common.sugar)}</th>
-                <th className="table-head-right">{formatMessage(common.salt)}</th>
-                <th className="table-head-right">{formatMessage(common.fibre)}</th>
+                <th className="table-head">
+                  {formatMessage(recordsMessages.meal)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.kcal)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.protein)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.carbs)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.fat)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.sugar)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.salt)}
+                </th>
+                <th className="table-head-right">
+                  {formatMessage(common.fibre)}
+                </th>
                 <th className="table-head-right w-20">
-                  <span className="sr-only">{formatMessage(common.actions)}</span>
+                  <span className="sr-only">
+                    {formatMessage(common.actions)}
+                  </span>
                 </th>
               </tr>
             </thead>
@@ -173,16 +206,28 @@ export default function Records() {
       </div>
 
       {/* Form modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editId ? formatMessage(recordsMessages.editRecord) : formatMessage(recordsMessages.newRecord)}>
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={
+          editId
+            ? formatMessage(recordsMessages.editRecord)
+            : formatMessage(recordsMessages.newRecord)
+        }
+      >
         <div className="space-y-3.5">
           <div>
-            <label className="label">{formatMessage(recordsMessages.meal)} {formatMessage(common.name)}</label>
+            <label className="label">
+              {formatMessage(recordsMessages.meal)} {formatMessage(common.name)}
+            </label>
             <select
               value={form.mealName}
               onChange={(e) => set('mealName', e.target.value)}
               className="input-field"
             >
-              <option value="">{formatMessage(recordsMessages.selectMeal)}</option>
+              <option value="">
+                {formatMessage(recordsMessages.selectMeal)}
+              </option>
               {mockMeals.map((m) => (
                 <option key={m.id} value={m.name}>
                   {m.name}
@@ -192,10 +237,18 @@ export default function Records() {
           </div>
 
           <div>
-            <label className="label">{formatMessage(recordsMessages.category)}</label>
-            <select value={form.category} onChange={(e) => set('category', e.target.value)} className="input-field">
+            <label className="label">
+              {formatMessage(recordsMessages.category)}
+            </label>
+            <select
+              value={form.category}
+              onChange={(e) => set('category', e.target.value)}
+              className="input-field"
+            >
               {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
             </select>
           </div>
@@ -214,7 +267,8 @@ export default function Records() {
             {FIELDS.map((f) => (
               <div key={f.key}>
                 <label className="label">
-                  {f.label} <span className="text-text-tertiary/60">({f.unit})</span>
+                  {f.label}{' '}
+                  <span className="text-text-tertiary/60">({f.unit})</span>
                 </label>
                 <input
                   type="number"
@@ -229,20 +283,36 @@ export default function Records() {
           </div>
 
           <div className="flex justify-end gap-2 pt-1">
-            <button onClick={() => setModalOpen(false)} className="btn-ghost">{formatMessage(common.cancel)}</button>
-            <button onClick={handleSave} className="btn-primary">{editId ? formatMessage(common.save) : formatMessage(common.save)}</button>
+            <button onClick={() => setModalOpen(false)} className="btn-ghost">
+              {formatMessage(common.cancel)}
+            </button>
+            <button onClick={handleSave} className="btn-primary">
+              {editId ? formatMessage(common.save) : formatMessage(common.save)}
+            </button>
           </div>
         </div>
       </Modal>
 
       {/* Delete confirm */}
-      <Modal open={deleteId !== null} onClose={() => setDeleteId(null)} title={formatMessage(common.delete)} width="sm">
+      <Modal
+        open={deleteId !== null}
+        onClose={() => setDeleteId(null)}
+        title={formatMessage(common.delete)}
+        width="sm"
+      >
         <p className="text-sm text-text-secondary">
           {formatMessage(common.confirmDelete)}
         </p>
         <div className="mt-4 flex justify-end gap-2">
-          <button onClick={() => setDeleteId(null)} className="btn-ghost">{formatMessage(common.cancel)}</button>
-          <button onClick={() => deleteId && handleDelete(deleteId)} className="btn-danger">{formatMessage(common.delete)}</button>
+          <button onClick={() => setDeleteId(null)} className="btn-ghost">
+            {formatMessage(common.cancel)}
+          </button>
+          <button
+            onClick={() => deleteId && handleDelete(deleteId)}
+            className="btn-danger"
+          >
+            {formatMessage(common.delete)}
+          </button>
         </div>
       </Modal>
     </div>

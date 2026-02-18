@@ -1,10 +1,10 @@
 import { useIntl } from 'react-intl';
-import { 
-  commonMessages, 
-  navMessages, 
-  dashboardMessages, 
-  recordsMessages, 
-  mealsMessages 
+import {
+  commonMessages,
+  navMessages,
+  dashboardMessages,
+  recordsMessages,
+  mealsMessages,
 } from '@/locales/en';
 
 export function useAppIntl() {

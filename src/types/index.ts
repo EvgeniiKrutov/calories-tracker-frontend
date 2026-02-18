@@ -28,5 +28,12 @@ export interface Meal {
 
 export type NutritionKey = keyof Pick<
   NutritionRecord,
-  'kcal' | 'fat' | 'saturatedFat' | 'protein' | 'salt' | 'sugar' | 'carb' | 'fibre'
+  | 'kcal'
+  | 'fat'
+  | 'saturatedFat'
+  | 'protein'
+  | 'salt'
+  | 'sugar'
+  | 'carb'
+  | 'fibre'
 >;

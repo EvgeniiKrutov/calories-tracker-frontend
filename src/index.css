@@ -3,29 +3,46 @@
 @tailwind utilities;
 
 @layer base {
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: 100%;
   }
-  
+
   * {
     scrollbar-width: thin;
     scrollbar-color: #232329 transparent;
   }
-  *::-webkit-scrollbar { width: 5px; height: 5px; }
-  *::-webkit-scrollbar-track { background: transparent; }
-  *::-webkit-scrollbar-thumb { background: #232329; border-radius: 9999px; }
-  *::-webkit-scrollbar-thumb:hover { background: #2e2e38; }
+  *::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: #232329;
+    border-radius: 9999px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: #2e2e38;
+  }
 
   input[type='number']::-webkit-inner-spin-button,
-  input[type='number']::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-  input[type='number'] { -moz-appearance: textfield; }
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
 
   select option {
     background-color: #1d1d24;
     color: #f0f0f5;
     padding: 8px 12px;
   }
-  
+
   select option:checked,
   select option:hover {
     background-color: #7c6aef;

@@ -177,7 +177,6 @@ export default function Meals() {
         </div>
       </div>
 
-      {/* Form modal */}
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -229,7 +228,6 @@ export default function Meals() {
         </div>
       </Modal>
 
-      {/* Delete confirm */}
       <Modal
         open={deleteId !== null}
         onClose={() => setDeleteId(null)}
