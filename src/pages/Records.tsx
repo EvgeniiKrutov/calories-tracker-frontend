@@ -33,7 +33,7 @@ const FIELDS = [
 ];
 
 export default function Records() {
-  const { formatMessage, records: recordsMessages, common } = useAppIntl();
+  const { formatMessage, common } = useAppIntl();
   const [records, setRecords] = useState<NutritionRecord[]>(mockRecords);
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -76,24 +76,24 @@ export default function Records() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-lg font-semibold text-text-primary">
-            {formatMessage(recordsMessages.title)}
+            {formatMessage(common.records)}
           </h1>
         </div>
         <button onClick={openCreate} className="btn-primary">
           <Plus className="h-3.5 w-3.5" />
-          {formatMessage(recordsMessages.addRecord)}
+          {formatMessage(common.addRecord)}
         </button>
       </div>
 
       {/* Table */}
       <div className="card overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto overflow-y-auto max-h-[560px]">
           <table className="w-full min-w-[780px]">
             <thead>
-              <tr className="border-b border-bg-border bg-bg-overlay">
+              <tr className="border-b border-bg-border bg-bg-overlay sticky top-0 z-10">
                 <th className="table-head">{formatMessage(common.date)}</th>
                 <th className="table-head">
-                  {formatMessage(recordsMessages.meal)}
+                  {formatMessage(common.meal)}
                 </th>
                 <th className="table-head-right">
                   {formatMessage(common.kcal)}
@@ -116,7 +116,7 @@ export default function Records() {
                 <th className="table-head-right">
                   {formatMessage(common.fibre)}
                 </th>
-                <th className="table-head-right w-20">
+                <th className="table-head-right w-20 sticky right-0 z-20 bg-bg-overlay">
                   <span className="sr-only">
                     {formatMessage(common.actions)}
                   </span>
@@ -125,7 +125,7 @@ export default function Records() {
             </thead>
             <tbody className="divide-y divide-bg-border">
               {records.map((r) => (
-                <tr key={r.id} className="hover:bg-bg-subtle/40">
+                <tr key={r.id} className="hover:bg-bg-subtle/40 group">
                   <td className="table-cell whitespace-nowrap">
                     <span className="text-text-primary">{fmtDate(r.date)}</span>
                     <span className="ml-2 font-mono text-[11px] text-text-tertiary">
@@ -158,7 +158,7 @@ export default function Records() {
                   <td className="table-cell text-right font-mono text-sm text-text-secondary">
                     {r.fibre.toFixed(1)}
                   </td>
-                  <td className="table-cell">
+                  <td className="table-cell sticky right-0 bg-bg-raised">
                     <div className="flex justify-end gap-0.5">
                       <button
                         onClick={() => openEdit(r)}

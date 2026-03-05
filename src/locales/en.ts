@@ -1,209 +1,77 @@
 import { defineMessages } from 'react-intl';
 
 export const commonMessages = defineMessages({
-  appName: {
-    id: 'common.appName',
-    defaultMessage: 'Fit&Track',
-  },
-  calories: {
-    id: 'common.calories',
-    defaultMessage: 'Calories',
-  },
-  protein: {
-    id: 'common.protein',
-    defaultMessage: 'Protein',
-  },
-  carbs: {
-    id: 'common.carbs',
-    defaultMessage: 'Carbs',
-  },
-  fat: {
-    id: 'common.fat',
-    defaultMessage: 'Fat',
-  },
-  sugar: {
-    id: 'common.sugar',
-    defaultMessage: 'Sugar',
-  },
-  salt: {
-    id: 'common.salt',
-    defaultMessage: 'Salt',
-  },
-  saturatedFat: {
-    id: 'common.saturatedFat',
-    defaultMessage: 'Sat. Fat',
-  },
-  fibre: {
-    id: 'common.fibre',
-    defaultMessage: 'Fibre',
-  },
-  kcal: {
-    id: 'common.kcal',
-    defaultMessage: 'kcal',
-  },
-  grams: {
-    id: 'common.grams',
-    defaultMessage: 'g',
-  },
-  name: {
-    id: 'common.name',
-    defaultMessage: 'Name',
-  },
-  date: {
-    id: 'common.date',
-    defaultMessage: 'Date',
-  },
-  actions: {
-    id: 'common.actions',
-    defaultMessage: 'Actions',
-  },
-  save: {
-    id: 'common.save',
-    defaultMessage: 'Save',
-  },
-  cancel: {
-    id: 'common.cancel',
-    defaultMessage: 'Cancel',
-  },
-  delete: {
-    id: 'common.delete',
-    defaultMessage: 'Delete',
-  },
+  appName: { id: 'common.appName', defaultMessage: 'Fit&Track' },
+  calories: { id: 'common.calories', defaultMessage: 'Calories' },
+  protein: { id: 'common.protein', defaultMessage: 'Protein' },
+  carbs: { id: 'common.carbs', defaultMessage: 'Carbs' },
+  fat: { id: 'common.fat', defaultMessage: 'Fat' },
+  sugar: { id: 'common.sugar', defaultMessage: 'Sugar' },
+  salt: { id: 'common.salt', defaultMessage: 'Salt' },
+  saturatedFat: { id: 'common.saturatedFat', defaultMessage: 'Sat. Fat' },
+  fibre: { id: 'common.fibre', defaultMessage: 'Fibre' },
+  kcal: { id: 'common.kcal', defaultMessage: 'kcal' },
+  grams: { id: 'common.grams', defaultMessage: 'g' },
+  name: { id: 'common.name', defaultMessage: 'Name' },
+  date: { id: 'common.date', defaultMessage: 'Date' },
+  actions: { id: 'common.actions', defaultMessage: 'Actions' },
+  save: { id: 'common.save', defaultMessage: 'Save' },
+  cancel: { id: 'common.cancel', defaultMessage: 'Cancel' },
+  delete: { id: 'common.delete', defaultMessage: 'Delete' },
   confirmDelete: {
     id: 'common.confirmDelete',
     defaultMessage: 'Are you sure you want to delete this item?',
   },
-  dashboard: {
-    id: 'common.dashboard',
-    defaultMessage: 'Dashboard',
-  },
-  records: {
-    id: 'common.records',
-    defaultMessage: 'Records',
-  },
-  meals: {
-    id: 'common.meals',
-    defaultMessage: 'Meals',
-  },
-  menu: {
-    id: 'common.menu',
-    defaultMessage: 'Menu',
-  },
-  target: {
-    id: 'common.target',
-    defaultMessage: 'Target',
-  },
-});
-
-export const dashboardMessages = defineMessages({
-  title: {
-    id: 'dashboard.title',
-    defaultMessage: 'Dashboard',
-  },
+  dashboard: { id: 'common.dashboard', defaultMessage: 'Dashboard' },
+  records: { id: 'common.records', defaultMessage: 'Records' },
+  meals: { id: 'common.meals', defaultMessage: 'Meals' },
+  menu: { id: 'common.menu', defaultMessage: 'Menu' },
+  target: { id: 'common.target', defaultMessage: 'Target' },
+  // Dashboard
+  todaysIntake: { id: 'common.todaysIntake', defaultMessage: "Today's Intake" },
   dayOverview: {
-    id: 'dashboard.dayOverview',
+    id: 'common.dayOverview',
     defaultMessage: '{days}-day overview',
   },
   recordsCount: {
-    id: 'dashboard.recordsCount',
+    id: 'common.recordsCount',
     defaultMessage: '{count} records',
   },
-  todaysIntake: {
-    id: 'dashboard.todaysIntake',
-    defaultMessage: "Today's Intake",
-  },
-  dailyCalories: {
-    id: 'dashboard.dailyCalories',
-    defaultMessage: 'Daily Calories',
-  },
+  dailyCalories: { id: 'common.dailyCalories', defaultMessage: 'Daily Calories' },
   dailySaturatedFat: {
-    id: 'dashboard.dailySaturatedFat',
+    id: 'common.dailySaturatedFat',
     defaultMessage: 'Daily Saturated Fat',
   },
-  dailySugar: {
-    id: 'dashboard.dailySugar',
-    defaultMessage: 'Daily Sugar',
-  },
-  dailySalt: {
-    id: 'dashboard.dailySalt',
-    defaultMessage: 'Daily Salt',
-  },
-  limits: {
-    id: 'dashboard.limits',
-    defaultMessage: 'Limits',
-  },
-  setLimits: {
-    id: 'dashboard.setLimits',
-    defaultMessage: 'Set Limits',
-  },
-  editLimits: {
-    id: 'dashboard.editLimits',
-    defaultMessage: 'Edit Limits',
-  },
+  dailySugar: { id: 'common.dailySugar', defaultMessage: 'Daily Sugar' },
+  dailySalt: { id: 'common.dailySalt', defaultMessage: 'Daily Salt' },
+  limits: { id: 'common.limits', defaultMessage: 'Limits' },
+  setLimits: { id: 'common.setLimits', defaultMessage: 'Set Limits' },
+  editLimits: { id: 'common.editLimits', defaultMessage: 'Edit Limits' },
   limitsDescription: {
-    id: 'dashboard.limitsDescription',
+    id: 'common.limitsDescription',
     defaultMessage: 'Set daily limits for tracking your nutrition goals',
   },
-});
-
-export const recordsMessages = defineMessages({
-  title: {
-    id: 'records.title',
-    defaultMessage: 'Records',
-  },
+  // Records
+  addRecord: { id: 'common.addRecord', defaultMessage: 'Add Record' },
+  newRecord: { id: 'common.newRecord', defaultMessage: 'New Record' },
+  editRecord: { id: 'common.editRecord', defaultMessage: 'Edit Record' },
   entriesCount: {
-    id: 'records.entriesCount',
+    id: 'common.entriesCount',
     defaultMessage: '{count} entries',
   },
-  addRecord: {
-    id: 'records.addRecord',
-    defaultMessage: 'Add Record',
-  },
-  newRecord: {
-    id: 'records.newRecord',
-    defaultMessage: 'New Record',
-  },
-  editRecord: {
-    id: 'records.editRecord',
-    defaultMessage: 'Edit Record',
-  },
-  meal: {
-    id: 'records.meal',
-    defaultMessage: 'Meal',
-  },
-  selectMeal: {
-    id: 'records.selectMeal',
-    defaultMessage: 'Select a meal',
-  },
-  category: {
-    id: 'records.category',
-    defaultMessage: 'Category',
-  },
-});
-
-export const mealsMessages = defineMessages({
-  title: {
-    id: 'meals.title',
-    defaultMessage: 'Meals',
-  },
+  meal: { id: 'common.meal', defaultMessage: 'Meal' },
+  selectMeal: { id: 'common.selectMeal', defaultMessage: 'Select a meal' },
+  category: { id: 'common.category', defaultMessage: 'Category' },
+  // Meals
+  addMeal: { id: 'common.addMeal', defaultMessage: 'Add Meal' },
+  newMeal: { id: 'common.newMeal', defaultMessage: 'New Meal' },
+  editMeal: { id: 'common.editMeal', defaultMessage: 'Edit Meal' },
   savedMealsCount: {
-    id: 'meals.savedMealsCount',
+    id: 'common.savedMealsCount',
     defaultMessage: '{count} saved meals',
   },
   reusableNote: {
-    id: 'meals.reusableNote',
+    id: 'common.reusableNote',
     defaultMessage: 'Reusable when adding records',
-  },
-  addMeal: {
-    id: 'meals.addMeal',
-    defaultMessage: 'Add Meal',
-  },
-  newMeal: {
-    id: 'meals.newMeal',
-    defaultMessage: 'New Meal',
-  },
-  editMeal: {
-    id: 'meals.editMeal',
-    defaultMessage: 'Edit Meal',
   },
 });

@@ -30,7 +30,7 @@ const RecordModal: React.FC<RecordModalProps> = ({
   isEditing,
   recordToEdit,
 }) => {
-  const { formatMessage, dashboard, common } = useAppIntl();
+  const { formatMessage, common } = useAppIntl();
   const [recordForm, setRecordForm] = useState(
     isEditing && recordToEdit ? recordToEdit : emptyRecordForm,
   );
@@ -48,7 +48,7 @@ const RecordModal: React.FC<RecordModalProps> = ({
     <Modal
       open={true}
       onClose={() => setRecordModalOpen(false)}
-      title={formatMessage(dashboard.title)}
+      title={formatMessage(common.dashboard)}
     >
       <div className="space-y-3.5">
         <div>

@@ -4,36 +4,13 @@ import Modal from '@/components/Modal';
 import type { Meal } from '@/types';
 import { useAppIntl } from '@/hooks/useAppIntl';
 import { getRequest } from '@/utils/requests';
-
-const emptyForm: Omit<Meal, 'id'> = {
-  name: '',
-  kcal: 0,
-  fat: 0,
-  saturatedFat: 0,
-  protein: 0,
-  salt: 0,
-  sugar: 0,
-  carb: 0,
-  fibre: 0,
-};
-
-const FIELDS = [
-  { key: 'kcal' as const, label: 'Calories', unit: 'kcal' },
-  { key: 'protein' as const, label: 'Protein', unit: 'g' },
-  { key: 'carb' as const, label: 'Carbs', unit: 'g' },
-  { key: 'fat' as const, label: 'Fat', unit: 'g' },
-  { key: 'saturatedFat' as const, label: 'Sat. Fat', unit: 'g' },
-  { key: 'sugar' as const, label: 'Sugar', unit: 'g' },
-  { key: 'salt' as const, label: 'Salt', unit: 'g' },
-  { key: 'fibre' as const, label: 'Fibre', unit: 'g' },
-];
+import MealModal from '@/components/modals/MealModal';
 
 export default function Meals() {
-  const { formatMessage, meals: mealsMessages, common } = useAppIntl();
+  const { formatMessage, common } = useAppIntl();
   const [meals, setMeals] = useState<Meal[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState(emptyForm);
+  const [editMeal, setEditMeal] = useState<Meal | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,28 +22,13 @@ export default function Meals() {
   }, []);
 
   const openCreate = () => {
-    setEditId(null);
-    setForm({ ...emptyForm });
+    setEditMeal(null);
     setModalOpen(true);
   };
 
   const openEdit = (m: Meal) => {
-    setEditId(m.id);
-    const { id, ...rest } = m;
-    setForm(rest);
+    setEditMeal(m);
     setModalOpen(true);
-  };
-
-  const handleSave = () => {
-    if (!form.name.trim()) return;
-    if (editId) {
-      setMeals((prev) =>
-        prev.map((m) => (m.id === editId ? { ...m, ...form } : m)),
-      );
-    } else {
-      setMeals((prev) => [{ ...form, id: crypto.randomUUID() }, ...prev]);
-    }
-    setModalOpen(false);
   };
 
   const handleDelete = (id: string) => {
@@ -74,30 +36,27 @@ export default function Meals() {
     setDeleteId(null);
   };
 
-  const set = (key: string, val: string | number) =>
-    setForm((p) => ({ ...p, [key]: val }));
-
   return (
     <div className="space-y-5">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-lg font-semibold text-text-primary">
-            {formatMessage(mealsMessages.title)}
+            {formatMessage(common.meals)}
           </h1>
         </div>
         <button onClick={openCreate} className="btn-primary">
           <Plus className="h-3.5 w-3.5" />
-          {formatMessage(mealsMessages.addMeal)}
+          {formatMessage(common.addMeal)}
         </button>
       </div>
 
       {/* Table */}
       <div className="card overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto overflow-y-auto max-h-[560px]">
           <table className="w-full min-w-[780px]">
             <thead>
-              <tr className="border-b border-bg-border bg-bg-overlay">
+              <tr className="border-b border-bg-border bg-bg-overlay sticky top-0 z-10">
                 <th className="table-head">{formatMessage(common.name)}</th>
                 <th className="table-head-right">
                   {formatMessage(common.kcal)}
@@ -120,7 +79,7 @@ export default function Meals() {
                 <th className="table-head-right">
                   {formatMessage(common.fibre)}
                 </th>
-                <th className="table-head-right w-20">
+                <th className="table-head-right w-20 sticky right-0 z-20 bg-bg-overlay">
                   <span className="sr-only">
                     {formatMessage(common.actions)}
                   </span>
@@ -154,7 +113,7 @@ export default function Meals() {
                   <td className="table-cell text-right font-mono text-sm text-text-secondary">
                     {m.fibre.toFixed(1)}
                   </td>
-                  <td className="table-cell">
+                  <td className="table-cell sticky right-0 bg-bg-raised">
                     <div className="flex justify-end gap-0.5">
                       <button
                         onClick={() => openEdit(m)}
@@ -177,56 +136,13 @@ export default function Meals() {
         </div>
       </div>
 
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={
-          editId
-            ? formatMessage(mealsMessages.editMeal)
-            : formatMessage(mealsMessages.newMeal)
-        }
-      >
-        <div className="space-y-3.5">
-          <div>
-            <label className="label">{formatMessage(common.name)}</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => set('name', e.target.value)}
-              placeholder="e.g. Grilled Chicken Salad"
-              className="input-field"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {FIELDS.map((f) => (
-              <div key={f.key}>
-                <label className="label">
-                  {f.label}{' '}
-                  <span className="text-text-tertiary/60">({f.unit})</span>
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  value={form[f.key]}
-                  onChange={(e) => set(f.key, parseFloat(e.target.value) || 0)}
-                  className="input-field font-mono"
-                />
-              </div>
-            ))}
-          </div>
-
-          <div className="flex justify-end gap-2 pt-1">
-            <button onClick={() => setModalOpen(false)} className="btn-ghost">
-              {formatMessage(common.cancel)}
-            </button>
-            <button onClick={handleSave} className="btn-primary">
-              {formatMessage(common.save)}
-            </button>
-          </div>
-        </div>
-      </Modal>
+      {modalOpen && (
+        <MealModal
+          isEditing={!!editMeal}
+          mealToEdit={editMeal ?? undefined}
+          setMealModalOpen={setModalOpen}
+        />
+      )}
 
       <Modal
         open={deleteId !== null}

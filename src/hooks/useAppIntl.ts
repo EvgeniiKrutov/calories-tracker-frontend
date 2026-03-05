@@ -1,10 +1,5 @@
 import { useIntl } from 'react-intl';
-import {
-  commonMessages,
-  dashboardMessages,
-  recordsMessages,
-  mealsMessages,
-} from '@/locales/en';
+import { commonMessages } from '@/locales/en';
 
 export function useAppIntl() {
   const intl = useIntl();
@@ -12,8 +7,5 @@ export function useAppIntl() {
   return {
     formatMessage: intl.formatMessage,
     common: commonMessages,
-    dashboard: dashboardMessages,
-    records: recordsMessages,
-    meals: mealsMessages,
   };
 }

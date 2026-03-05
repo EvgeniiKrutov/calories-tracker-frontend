@@ -47,7 +47,7 @@ const axisStyle = {
 };
 
 export default function Dashboard() {
-  const { formatMessage, dashboard, common } = useAppIntl();
+  const { formatMessage, common } = useAppIntl();
 
   const [limits, setLimits] = useState({
     kcal: 2200,
@@ -170,14 +170,14 @@ export default function Dashboard() {
     <div className="space-y-5">
       <div>
         <h1 className="text-lg font-semibold text-text-primary">
-          {formatMessage(dashboard.title)}
+          {formatMessage(common.dashboard)}
         </h1>
       </div>
 
       <div className="grid gap-3 lg:grid-cols-7">
         <div className="card p-5 lg:col-span-2">
           <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            {formatMessage(dashboard.todaysIntake)}
+            {formatMessage(common.todaysIntake)}
           </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -298,7 +298,7 @@ export default function Dashboard() {
         <div className="card p-5 lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-              {formatMessage(dashboard.limits)}
+              {formatMessage(common.limits)}
             </h3>
             <button
               onClick={openLimitsModal}
@@ -402,7 +402,7 @@ export default function Dashboard() {
         {/* Calorie trend */}
         <div className="card p-4 lg:col-span-3">
           <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            {formatMessage(dashboard.dailyCalories)}
+            {formatMessage(common.dailyCalories)}
           </h3>
           <div className="h-56 lg:h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -465,7 +465,7 @@ export default function Dashboard() {
         {/* Daily Saturated Fat */}
         <div className="card p-4">
           <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            {formatMessage(dashboard.dailySaturatedFat)}
+            {formatMessage(common.dailySaturatedFat)}
           </h3>
           <div className="h-56 lg:h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -531,7 +531,7 @@ export default function Dashboard() {
         {/* Daily Sugar */}
         <div className="card p-4">
           <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            {formatMessage(dashboard.dailySugar)}
+            {formatMessage(common.dailySugar)}
           </h3>
           <div className="h-56 lg:h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -597,7 +597,7 @@ export default function Dashboard() {
         {/* Daily Salt */}
         <div className="card p-4">
           <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            {formatMessage(dashboard.dailySalt)}
+            {formatMessage(common.dailySalt)}
           </h3>
           <div className="h-56 lg:h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -659,11 +659,11 @@ export default function Dashboard() {
       <Modal
         open={limitsModalOpen}
         onClose={() => setLimitsModalOpen(false)}
-        title={formatMessage(dashboard.editLimits)}
+        title={formatMessage(common.editLimits)}
       >
         <div className="space-y-3.5">
           <p className="text-sm text-text-secondary">
-            {formatMessage(dashboard.limitsDescription)}
+            {formatMessage(common.limitsDescription)}
           </p>
 
           <div>
