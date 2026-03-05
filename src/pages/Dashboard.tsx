@@ -10,10 +10,10 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { Flame, Beef, Wheat, Droplets, Settings, Plus } from 'lucide-react';
-import { mockRecords, mockMeals, CATEGORIES } from '@/data/mock';
+import { mockRecords } from '@/data/mock';
 import { useAppIntl } from '@/hooks/useAppIntl';
 import Modal from '@/components/Modal';
-import type { NutritionRecord } from '@/types';
+import RecordModal from '@/components/modals/RecordModal';
 
 const COLORS = {
   kcal: '#7c6aef',
@@ -46,31 +46,6 @@ const axisStyle = {
   fontFamily: 'JetBrains Mono',
 };
 
-const emptyRecordForm: Omit<NutritionRecord, 'id'> = {
-  mealName: '',
-  category: 'Breakfast',
-  date: new Date().toISOString().slice(0, 16),
-  kcal: 0,
-  fat: 0,
-  saturatedFat: 0,
-  protein: 0,
-  salt: 0,
-  sugar: 0,
-  carb: 0,
-  fibre: 0,
-};
-
-const FIELDS = [
-  { key: 'kcal' as const, label: 'Calories', unit: 'kcal' },
-  { key: 'protein' as const, label: 'Protein', unit: 'g' },
-  { key: 'carb' as const, label: 'Carbs', unit: 'g' },
-  { key: 'fat' as const, label: 'Fat', unit: 'g' },
-  { key: 'saturatedFat' as const, label: 'Sat. Fat', unit: 'g' },
-  { key: 'sugar' as const, label: 'Sugar', unit: 'g' },
-  { key: 'salt' as const, label: 'Salt', unit: 'g' },
-  { key: 'fibre' as const, label: 'Fibre', unit: 'g' },
-];
-
 export default function Dashboard() {
   const { formatMessage, dashboard, common } = useAppIntl();
 
@@ -84,24 +59,10 @@ export default function Dashboard() {
   const [limitsForm, setLimitsForm] = useState(limits);
 
   const [recordModalOpen, setRecordModalOpen] = useState(false);
-  const [recordForm, setRecordForm] = useState(emptyRecordForm);
 
   const openRecordModal = () => {
-    setRecordForm({
-      ...emptyRecordForm,
-      date: new Date().toISOString().slice(0, 16),
-    });
     setRecordModalOpen(true);
   };
-
-  const saveRecord = () => {
-    // In a real app, this would save to a backend or state management
-    console.log('Saving record:', recordForm);
-    setRecordModalOpen(false);
-  };
-
-  const setRecordField = (key: string, val: string | number) =>
-    setRecordForm((p) => ({ ...p, [key]: val }));
 
   const openLimitsModal = () => {
     setLimitsForm(limits);
@@ -816,87 +777,12 @@ export default function Dashboard() {
       </button>
 
       {/* Record Modal */}
-      <Modal
-        open={recordModalOpen}
-        onClose={() => setRecordModalOpen(false)}
-        title={formatMessage(dashboard.title)}
-      >
-        <div className="space-y-3.5">
-          <div>
-            <label className="label">Meal {formatMessage(common.name)}</label>
-            <select
-              value={recordForm.mealName}
-              onChange={(e) => setRecordField('mealName', e.target.value)}
-              className="input-field"
-            >
-              <option value="">Select a meal</option>
-              {mockMeals.map((m) => (
-                <option key={m.id} value={m.name}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="label">Category</label>
-            <select
-              value={recordForm.category}
-              onChange={(e) => setRecordField('category', e.target.value)}
-              className="input-field"
-            >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="label">{formatMessage(common.date)} & Time</label>
-            <input
-              type="datetime-local"
-              value={recordForm.date}
-              onChange={(e) => setRecordField('date', e.target.value)}
-              className="input-field [color-scheme:dark]"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {FIELDS.map((f) => (
-              <div key={f.key}>
-                <label className="label">
-                  {f.label}{' '}
-                  <span className="text-text-tertiary/60">({f.unit})</span>
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  value={recordForm[f.key]}
-                  onChange={(e) =>
-                    setRecordField(f.key, parseFloat(e.target.value) || 0)
-                  }
-                  className="input-field font-mono"
-                />
-              </div>
-            ))}
-          </div>
-
-          <div className="flex justify-end gap-2 pt-1">
-            <button
-              onClick={() => setRecordModalOpen(false)}
-              className="btn-ghost"
-            >
-              {formatMessage(common.cancel)}
-            </button>
-            <button onClick={saveRecord} className="btn-primary">
-              {formatMessage(common.save)}
-            </button>
-          </div>
-        </div>
-      </Modal>
+      {recordModalOpen && (
+        <RecordModal
+          isEditing={false}
+          setRecordModalOpen={(isOpen) => setRecordModalOpen(isOpen)}
+        />
+      )}
     </div>
   );
 }

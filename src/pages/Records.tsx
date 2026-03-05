@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import Modal from '@/components/Modal';
-import { mockRecords, mockMeals, CATEGORIES } from '@/data/mock';
+import { mockRecords } from '@/data/mock';
 import type { NutritionRecord } from '@/types';
 import { useAppIntl } from '@/hooks/useAppIntl';
+import RecordModal from '@/components/modals/RecordModal';
 
-const emptyForm: Omit<NutritionRecord, 'id'> = {
+const emptyForm: NutritionRecord = {
+  id: '',
   mealName: '',
   category: 'Breakfast',
   date: new Date().toISOString().slice(0, 16),
@@ -40,46 +42,20 @@ export default function Records() {
 
   const openCreate = () => {
     setEditId(null);
-    setForm({ ...emptyForm, date: new Date().toISOString().slice(0, 16) });
+    setForm({ ...emptyForm, date: new Date().toISOString().split('T')[0] });
     setModalOpen(true);
   };
 
   const openEdit = (r: NutritionRecord) => {
     setEditId(r.id);
-    const { id, ...rest } = r;
-    setForm({ ...rest, date: r.date.slice(0, 16) });
+    setForm({ ...r, date: r.date.split('T')[0] });
     setModalOpen(true);
-  };
-
-  const handleSave = () => {
-    if (editId) {
-      setRecords((prev) =>
-        prev.map((r) =>
-          r.id === editId
-            ? { ...r, ...form, date: new Date(form.date).toISOString() }
-            : r,
-        ),
-      );
-    } else {
-      setRecords((prev) => [
-        {
-          ...form,
-          id: crypto.randomUUID(),
-          date: new Date(form.date).toISOString(),
-        },
-        ...prev,
-      ]);
-    }
-    setModalOpen(false);
   };
 
   const handleDelete = (id: string) => {
     setRecords((prev) => prev.filter((r) => r.id !== id));
     setDeleteId(null);
   };
-
-  const set = (key: string, val: string | number) =>
-    setForm((p) => ({ ...p, [key]: val }));
 
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString('en-GB', {
@@ -206,92 +182,13 @@ export default function Records() {
       </div>
 
       {/* Form modal */}
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={
-          editId
-            ? formatMessage(recordsMessages.editRecord)
-            : formatMessage(recordsMessages.newRecord)
-        }
-      >
-        <div className="space-y-3.5">
-          <div>
-            <label className="label">
-              {formatMessage(recordsMessages.meal)} {formatMessage(common.name)}
-            </label>
-            <select
-              value={form.mealName}
-              onChange={(e) => set('mealName', e.target.value)}
-              className="input-field"
-            >
-              <option value="">
-                {formatMessage(recordsMessages.selectMeal)}
-              </option>
-              {mockMeals.map((m) => (
-                <option key={m.id} value={m.name}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="label">
-              {formatMessage(recordsMessages.category)}
-            </label>
-            <select
-              value={form.category}
-              onChange={(e) => set('category', e.target.value)}
-              className="input-field"
-            >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="label">{formatMessage(common.date)} & Time</label>
-            <input
-              type="datetime-local"
-              value={form.date}
-              onChange={(e) => set('date', e.target.value)}
-              className="input-field [color-scheme:dark]"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {FIELDS.map((f) => (
-              <div key={f.key}>
-                <label className="label">
-                  {f.label}{' '}
-                  <span className="text-text-tertiary/60">({f.unit})</span>
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  value={form[f.key]}
-                  onChange={(e) => set(f.key, parseFloat(e.target.value) || 0)}
-                  className="input-field font-mono"
-                />
-              </div>
-            ))}
-          </div>
-
-          <div className="flex justify-end gap-2 pt-1">
-            <button onClick={() => setModalOpen(false)} className="btn-ghost">
-              {formatMessage(common.cancel)}
-            </button>
-            <button onClick={handleSave} className="btn-primary">
-              {editId ? formatMessage(common.save) : formatMessage(common.save)}
-            </button>
-          </div>
-        </div>
-      </Modal>
+      {modalOpen && (
+        <RecordModal
+          isEditing={!!editId}
+          recordToEdit={form}
+          setRecordModalOpen={(isOpen) => setModalOpen(isOpen)}
+        />
+      )}
 
       {/* Delete confirm */}
       <Modal
