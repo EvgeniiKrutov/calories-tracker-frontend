@@ -19,7 +19,7 @@ const nav = [
 export default function Layout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const { formatMessage, nav: navMessages, common } = useAppIntl();
+  const { formatMessage, common } = useAppIntl();
 
   const pageTitle =
     nav.find((n) =>
@@ -29,7 +29,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     )?.labelKey ?? '';
 
   const getNavLabel = (labelKey: string) => {
-    return formatMessage(navMessages[labelKey as keyof typeof navMessages]);
+    return formatMessage(common[labelKey as keyof typeof common]);
   };
 
   return (

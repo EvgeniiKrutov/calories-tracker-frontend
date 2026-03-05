@@ -207,16 +207,13 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
       <div>
         <h1 className="text-lg font-semibold text-text-primary">
           {formatMessage(dashboard.title)}
         </h1>
       </div>
 
-      {/* Charts — row 1 */}
       <div className="grid gap-3 lg:grid-cols-7">
-        {/* Today's Totals */}
         <div className="card p-5 lg:col-span-2">
           <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
             {formatMessage(dashboard.todaysIntake)}

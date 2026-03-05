@@ -73,27 +73,24 @@ export const commonMessages = defineMessages({
     id: 'common.confirmDelete',
     defaultMessage: 'Are you sure you want to delete this item?',
   },
-});
-
-export const navMessages = defineMessages({
   dashboard: {
-    id: 'nav.dashboard',
+    id: 'common.dashboard',
     defaultMessage: 'Dashboard',
   },
   records: {
-    id: 'nav.records',
+    id: 'common.records',
     defaultMessage: 'Records',
   },
   meals: {
-    id: 'nav.meals',
+    id: 'common.meals',
     defaultMessage: 'Meals',
   },
   menu: {
-    id: 'nav.menu',
+    id: 'common.menu',
     defaultMessage: 'Menu',
   },
   target: {
-    id: 'nav.target',
+    id: 'common.target',
     defaultMessage: 'Target',
   },
 });
