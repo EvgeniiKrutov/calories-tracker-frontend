@@ -29,7 +29,6 @@ export const getRequest = async <T>(
   return response.json();
 };
 
-/** GET for endpoints that return a single object rather than a paginated list. */
 export const getOneRequest = async <T>(
   url: string,
   params?: Record<string, string>,
@@ -75,7 +74,6 @@ export const deleteRequest = async <T>(url: string): Promise<T | null> => {
     },
   });
 
-  // The BE answers deletes with an empty body, which JSON.parse would choke on.
   const body = await response.text();
   return body ? (JSON.parse(body) as T) : null;
 };

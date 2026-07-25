@@ -19,17 +19,12 @@ interface RecordForm {
   grams: number | string;
 }
 
-/**
- * Records are day-granular. The BE stores them at midnight UTC, so read the
- * date part straight off the ISO string rather than shifting into local time.
- */
 const toInputDate = (iso: string) => {
   const parsed = new Date(iso);
   if (isNaN(parsed.getTime())) return '';
   return parsed.toISOString().slice(0, 10);
 };
 
-/** Midnight UTC on the picked day — the time component is not user-editable. */
 const toIsoDate = (inputDate: string) => `${inputDate}T00:00:00.000Z`;
 
 const emptyRecordForm: RecordForm = {
@@ -68,8 +63,6 @@ const RecordModal: React.FC<RecordModalProps> = ({
   const grams = parseFloat(String(recordForm.grams));
   const selectedMeal = meals.find((m) => m.id === recordForm.mealId);
 
-  // The backend scales the meal's per-100g values by the amount; mirror it so
-  // the user sees what will be stored.
   const preview = useMemo(() => {
     if (!selectedMeal || isNaN(grams)) return null;
     const factor = grams / 100;

@@ -27,7 +27,6 @@ export const commonMessages = defineMessages({
   meals: { id: 'common.meals', defaultMessage: 'Meals' },
   menu: { id: 'common.menu', defaultMessage: 'Menu' },
   target: { id: 'common.target', defaultMessage: 'Target' },
-  // Dashboard
   todaysIntake: { id: 'common.todaysIntake', defaultMessage: "Today's Intake" },
   dayOverview: {
     id: 'common.dayOverview',
@@ -59,7 +58,6 @@ export const commonMessages = defineMessages({
     id: 'common.limitsDescription',
     defaultMessage: 'Set daily limits for tracking your nutrition goals',
   },
-  // Records
   addRecord: { id: 'common.addRecord', defaultMessage: 'Add Record' },
   newRecord: { id: 'common.newRecord', defaultMessage: 'New Record' },
   editRecord: { id: 'common.editRecord', defaultMessage: 'Edit Record' },
@@ -75,7 +73,6 @@ export const commonMessages = defineMessages({
     id: 'common.nutritionPreview',
     defaultMessage: 'Nutrition for this amount',
   },
-  // Meals
   addMeal: { id: 'common.addMeal', defaultMessage: 'Add Meal' },
   newMeal: { id: 'common.newMeal', defaultMessage: 'New Meal' },
   editMeal: { id: 'common.editMeal', defaultMessage: 'Edit Meal' },

@@ -68,11 +68,9 @@ interface IntakeRow {
   icon: LucideIcon;
   color: string;
   decimals: number;
-  /** Whether the value is a weight and needs the grams suffix. */
   unit: boolean;
 }
 
-/** Rows of the Today's Intake card, in display order. */
 const INTAKE_ROWS: IntakeRow[] = [
   {
     key: 'kcal',
@@ -158,7 +156,6 @@ export default function Dashboard() {
   const [limitsForm, setLimitsForm] = useState(limits);
 
   const [recordModalOpen, setRecordModalOpen] = useState(false);
-  /** Bumped whenever a record was possibly written, to re-read the BE data. */
   const [dataVersion, setDataVersion] = useState(0);
 
   const openRecordModal = () => {
@@ -254,7 +251,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Limits */}
         <div className="card p-5 lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
@@ -359,7 +355,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Calorie trend */}
         <div className="card p-4 lg:col-span-3">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
@@ -423,9 +418,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Charts — row 2: Unhealthy Metrics */}
       <div className="grid gap-3 lg:grid-cols-3">
-        {/* Daily Saturated Fat */}
         <div className="card p-4">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
@@ -497,7 +490,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Daily Sugar */}
         <div className="card p-4">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
@@ -566,7 +558,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Daily Salt */}
         <div className="card p-4">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
@@ -630,7 +621,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Limits Modal */}
       <Modal
         open={limitsModalOpen}
         onClose={() => setLimitsModalOpen(false)}
@@ -743,7 +733,6 @@ export default function Dashboard() {
         </div>
       </Modal>
 
-      {/* Floating Action Button */}
       <button
         onClick={openRecordModal}
         className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-white shadow-lg hover:bg-accent/90 transition-all hover:scale-105"
@@ -751,7 +740,6 @@ export default function Dashboard() {
         <Plus className="h-6 w-6" />
       </button>
 
-      {/* Record Modal */}
       {recordModalOpen && (
         <RecordModal isEditing={false} setRecordModalOpen={closeRecordModal} />
       )}

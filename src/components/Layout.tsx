@@ -34,7 +34,6 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-dvh overflow-hidden bg-bg">
-      {/* Backdrop */}
       {open && (
         <div
           className="fixed inset-0 z-40 bg-black/60 lg:hidden"
@@ -42,13 +41,11 @@ export default function Layout({ children }: { children: ReactNode }) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 flex w-56 flex-col border-r border-bg-border bg-bg-raised
           lg:static lg:translate-x-0
           ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        {/* Brand */}
         <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-bg-border px-5">
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-accent">
             <Flame className="h-3.5 w-3.5 text-white" />
@@ -58,7 +55,6 @@ export default function Layout({ children }: { children: ReactNode }) {
           </span>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 px-3 pt-4">
           <div className="space-y-0.5">
             {nav.map((item) => (
@@ -84,9 +80,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         </nav>
       </aside>
 
-      {/* Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Mobile header */}
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-bg-border px-4 lg:hidden">
           <button
             onClick={() => setOpen(!open)}
@@ -104,7 +98,6 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        {/* Page content */}
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-[1600px] px-6 py-6 lg:px-10 lg:py-8">
             {children}

@@ -55,8 +55,6 @@ export default function Records() {
     await fetchRecords();
   };
 
-  // Records are stored at midnight UTC, so read them back in UTC to avoid
-  // slipping to the previous day in behind-UTC timezones.
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString('en-GB', {
       day: '2-digit',
@@ -67,7 +65,6 @@ export default function Records() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-lg font-semibold text-text-primary">
@@ -80,7 +77,6 @@ export default function Records() {
         </button>
       </div>
 
-      {/* Table */}
       <div className="card overflow-hidden">
         <div className="overflow-x-auto overflow-y-auto max-h-[560px]">
           <table className="w-full min-w-[780px]">
@@ -203,7 +199,6 @@ export default function Records() {
         />
       )}
 
-      {/* Delete confirm */}
       <Modal
         open={deleteId !== null}
         onClose={() => setDeleteId(null)}

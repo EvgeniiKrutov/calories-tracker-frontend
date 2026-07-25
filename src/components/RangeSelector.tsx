@@ -8,7 +8,6 @@ interface RangeSelectorProps {
   onChange: (value: ChartRangeState) => void;
 }
 
-/** Compact 1 week / 1 month / custom switch used by the daily chart widgets. */
 export default function RangeSelector({ value, onChange }: RangeSelectorProps) {
   const { formatMessage, common } = useAppIntl();
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -31,7 +30,6 @@ export default function RangeSelector({ value, onChange }: RangeSelectorProps) {
   }, [pickerOpen]);
 
   const selectRange = (range: ChartRange) => {
-    // Re-clicking Custom toggles the date picker instead of closing it.
     setPickerOpen(
       range === 'custom' && !(value.range === 'custom' && pickerOpen),
     );

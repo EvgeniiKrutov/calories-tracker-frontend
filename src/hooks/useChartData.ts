@@ -12,7 +12,6 @@ const RANGE_DAYS = { week: 7, month: 30 };
 
 const toIsoDay = (date: Date): string => date.toISOString().slice(0, 10);
 
-/** Shifts an ISO day by the given number of days, in UTC like the BE does. */
 const shiftDay = (day: string, offset: number): string => {
   const date = new Date(`${day}T00:00:00.000Z`);
   date.setUTCDate(date.getUTCDate() + offset);
@@ -28,10 +27,6 @@ const formatDayLabel = (day: string): string =>
     })
     .replace('/', '.');
 
-/**
- * The BE only returns days that have records, so days without any are filled
- * with zeros to keep the X axis evenly spaced across the whole range.
- */
 function toSeries(response: ChartResponse): ChartSeriesPoint[] {
   if (!response?.points) return [];
 
@@ -41,17 +36,12 @@ function toSeries(response: ChartResponse): ChartSeriesPoint[] {
   const last = response.end.slice(0, 10);
   const series: ChartSeriesPoint[] = [];
 
-  // `end` is exclusive, matching the BE range.
   for (let day = response.start.slice(0, 10); day < last; day = shiftDay(day, 1))
     series.push({ day, date: formatDayLabel(day), value: values.get(day) ?? 0 });
 
   return series;
 }
 
-/**
- * Range state for one chart widget plus the daily totals it selects, read from
- * GET /records/chart. `reloadKey` refetches when the underlying records change.
- */
 export function useChartData(category: ChartCategory, reloadKey?: unknown) {
   const [range, setRange] = useState<ChartRangeState>(() => {
     const today = toIsoDay(new Date());
@@ -66,7 +56,6 @@ export function useChartData(category: ChartCategory, reloadKey?: unknown) {
   const { range: period, start, end } = range;
 
   useEffect(() => {
-    // A half-filled custom range is rejected by the BE validation.
     if (period === 'custom' && (!start || !end)) return;
 
     let cancelled = false;

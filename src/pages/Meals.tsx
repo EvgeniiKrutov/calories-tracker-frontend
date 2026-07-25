@@ -52,7 +52,6 @@ export default function Meals() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-lg font-semibold text-text-primary">
@@ -65,7 +64,6 @@ export default function Meals() {
         </button>
       </div>
 
-      {/* Table */}
       <div className="card overflow-hidden">
         <div className="overflow-x-auto overflow-y-auto max-h-[560px]">
           <table className="w-full min-w-[780px]">
