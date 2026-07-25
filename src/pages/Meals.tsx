@@ -1,25 +1,33 @@
 import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
+import PaginationControls from '@/components/PaginationControls';
 import Modal from '@/components/Modal';
 import type { Meal } from '@/types';
 import { useAppIntl } from '@/hooks/useAppIntl';
 import { getRequest } from '@/utils/requests';
 import MealModal from '@/components/modals/MealModal';
+import NoData from '@/components/NoData';
+
+const PAGE_SIZE = 20;
 
 export default function Meals() {
   const { formatMessage, common } = useAppIntl();
   const [meals, setMeals] = useState<Meal[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [editMeal, setEditMeal] = useState<Meal | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  const fetchMeals = async () => {
+    const result = await getRequest<Meal>('meals', page, PAGE_SIZE);
+    setMeals(result.data);
+    setTotalPages(result.totalPages);
+  };
+
   useEffect(() => {
-    const fetchMeals = async () => {
-      const data = await getRequest('meals');
-      setMeals(data);
-    };
     fetchMeals();
-  }, []);
+  }, [page]);
 
   const openCreate = () => {
     setEditMeal(null);
@@ -34,6 +42,11 @@ export default function Meals() {
   const handleDelete = (id: string) => {
     setMeals((prev) => prev.filter((m) => m.id !== id));
     setDeleteId(null);
+  };
+
+  const closeModal = async (mode: boolean) => {
+    setModalOpen(mode);
+    await fetchMeals();
   };
 
   return (
@@ -87,6 +100,7 @@ export default function Meals() {
               </tr>
             </thead>
             <tbody className="divide-y divide-bg-border">
+              {meals.length === 0 && <NoData />}
               {meals.map((m) => (
                 <tr key={m.id} className="hover:bg-bg-subtle/40">
                   <td className="table-cell font-medium text-text-primary">
@@ -134,13 +148,20 @@ export default function Meals() {
             </tbody>
           </table>
         </div>
+        {meals.length > 0 && (
+          <PaginationControls
+            page={page}
+            totalPages={totalPages}
+            setPage={setPage}
+          />
+        )}
       </div>
 
       {modalOpen && (
         <MealModal
           isEditing={!!editMeal}
           mealToEdit={editMeal ?? undefined}
-          setMealModalOpen={setModalOpen}
+          setMealModalOpen={closeModal}
         />
       )}
 

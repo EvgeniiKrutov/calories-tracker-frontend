@@ -1,8 +1,9 @@
-import { NutritionRecord } from '@/types';
+import { Meal, NutritionRecord } from '@/types';
 import Modal from '../Modal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppIntl } from '@/hooks/useAppIntl';
 import { CATEGORIES, FIELDS, mockMeals } from '@/data/mock';
+import { getRequest } from '@/utils/requests';
 
 interface RecordModalProps {
   setRecordModalOpen: (open: boolean) => void;
@@ -31,9 +32,23 @@ const RecordModal: React.FC<RecordModalProps> = ({
   recordToEdit,
 }) => {
   const { formatMessage, common } = useAppIntl();
+  const [meals, setMeals] = useState<Meal[]>([]);
   const [recordForm, setRecordForm] = useState(
     isEditing && recordToEdit ? recordToEdit : emptyRecordForm,
   );
+
+  useEffect(() => {
+    const fetchMeals = async () => {
+      const result = await getRequest<Meal>('meals');
+      setMeals(result.data);
+    };
+    fetchMeals();
+  }, []);
+
+  const isFormValid =
+    recordForm.mealName !== '' &&
+    recordForm.date !== '' &&
+    FIELDS.every((f) => !isNaN(parseFloat(String(recordForm[f.key as keyof NutritionRecord]))));
 
   const saveRecord = () => {
     // CALL API TO SAVE RECORD ON API
@@ -59,7 +74,7 @@ const RecordModal: React.FC<RecordModalProps> = ({
             className="input-field"
           >
             <option value="">Select a meal</option>
-            {mockMeals.map((m) => (
+            {meals.map((m) => (
               <option key={m.id} value={m.name}>
                 {m.name}
               </option>
@@ -104,9 +119,8 @@ const RecordModal: React.FC<RecordModalProps> = ({
                 step="0.1"
                 min="0"
                 value={recordForm[f.key]}
-                onChange={(e) =>
-                  setRecordField(f.key, parseFloat(e.target.value) || 0)
-                }
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => setRecordField(f.key, e.target.value)}
                 className="input-field font-mono"
               />
             </div>
@@ -120,7 +134,11 @@ const RecordModal: React.FC<RecordModalProps> = ({
           >
             {formatMessage(common.cancel)}
           </button>
-          <button onClick={saveRecord} className="btn-primary">
+          <button
+            onClick={saveRecord}
+            disabled={!isFormValid}
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             {formatMessage(common.save)}
           </button>
         </div>

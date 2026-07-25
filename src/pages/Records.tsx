@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import Modal from '@/components/Modal';
-import { mockRecords } from '@/data/mock';
+import PaginationControls from '@/components/PaginationControls';
 import type { NutritionRecord } from '@/types';
 import { useAppIntl } from '@/hooks/useAppIntl';
 import RecordModal from '@/components/modals/RecordModal';
+import { getRequest } from '@/utils/requests';
+import NoData from '@/components/NoData';
+
+const PAGE_SIZE = 20;
 
 const emptyForm: NutritionRecord = {
   id: '',
@@ -21,24 +25,30 @@ const emptyForm: NutritionRecord = {
   fibre: 0,
 };
 
-const FIELDS = [
-  { key: 'kcal' as const, label: 'Calories', unit: 'kcal' },
-  { key: 'protein' as const, label: 'Protein', unit: 'g' },
-  { key: 'carb' as const, label: 'Carbs', unit: 'g' },
-  { key: 'fat' as const, label: 'Fat', unit: 'g' },
-  { key: 'saturatedFat' as const, label: 'Sat. Fat', unit: 'g' },
-  { key: 'sugar' as const, label: 'Sugar', unit: 'g' },
-  { key: 'salt' as const, label: 'Salt', unit: 'g' },
-  { key: 'fibre' as const, label: 'Fibre', unit: 'g' },
-];
-
 export default function Records() {
   const { formatMessage, common } = useAppIntl();
-  const [records, setRecords] = useState<NutritionRecord[]>(mockRecords);
+  const [records, setRecords] = useState<NutritionRecord[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const fetchRecords = async () => {
+    const result = await getRequest<NutritionRecord>(
+      'records',
+      page,
+      PAGE_SIZE,
+    );
+    setRecords(result.data);
+    setTotalPages(result.totalPages);
+  };
+
+  useEffect(() => {
+    if (modalOpen) return;
+    fetchRecords();
+  }, [page, modalOpen]);
 
   const openCreate = () => {
     setEditId(null);
@@ -55,6 +65,11 @@ export default function Records() {
   const handleDelete = (id: string) => {
     setRecords((prev) => prev.filter((r) => r.id !== id));
     setDeleteId(null);
+  };
+
+  const closeModal = async (mode: boolean) => {
+    setModalOpen(mode);
+    await fetchRecords();
   };
 
   const fmtDate = (iso: string) =>
@@ -92,9 +107,7 @@ export default function Records() {
             <thead>
               <tr className="border-b border-bg-border bg-bg-overlay sticky top-0 z-10">
                 <th className="table-head">{formatMessage(common.date)}</th>
-                <th className="table-head">
-                  {formatMessage(common.meal)}
-                </th>
+                <th className="table-head">{formatMessage(common.meal)}</th>
                 <th className="table-head-right">
                   {formatMessage(common.kcal)}
                 </th>
@@ -124,6 +137,7 @@ export default function Records() {
               </tr>
             </thead>
             <tbody className="divide-y divide-bg-border">
+              {records.length === 0 && <NoData />}
               {records.map((r) => (
                 <tr key={r.id} className="hover:bg-bg-subtle/40 group">
                   <td className="table-cell whitespace-nowrap">
@@ -179,14 +193,20 @@ export default function Records() {
             </tbody>
           </table>
         </div>
+        {records.length > 0 && (
+          <PaginationControls
+            page={page}
+            totalPages={totalPages}
+            setPage={setPage}
+          />
+        )}
       </div>
 
-      {/* Form modal */}
       {modalOpen && (
         <RecordModal
           isEditing={!!editId}
           recordToEdit={form}
-          setRecordModalOpen={(isOpen) => setModalOpen(isOpen)}
+          setRecordModalOpen={closeModal}
         />
       )}
 

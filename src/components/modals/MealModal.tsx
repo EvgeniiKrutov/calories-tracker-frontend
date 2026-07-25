@@ -3,6 +3,7 @@ import type { Meal } from '@/types';
 import Modal from '../Modal';
 import { useAppIntl } from '@/hooks/useAppIntl';
 import { FIELDS } from '@/data/mock';
+import { updateRequest } from '@/utils/requests';
 
 interface MealModalProps {
   setMealModalOpen: (open: boolean) => void;
@@ -10,7 +11,8 @@ interface MealModalProps {
   mealToEdit?: Meal;
 }
 
-const emptyMealForm: Omit<Meal, 'id'> = {
+const emptyMealForm: Meal = {
+  id: '',
   name: '',
   kcal: 0,
   fat: 0,
@@ -28,16 +30,23 @@ const MealModal: React.FC<MealModalProps> = ({
   mealToEdit,
 }) => {
   const { formatMessage, common } = useAppIntl();
-  const [mealForm, setMealForm] = useState<Omit<Meal, 'id'>>(() => {
-    if (isEditing && mealToEdit) {
-      const { id: _id, ...rest } = mealToEdit;
-      return rest;
-    }
-    return emptyMealForm;
-  });
+  const [mealForm, setMealForm] = useState<Meal>(
+    isEditing && mealToEdit ? mealToEdit : emptyMealForm,
+  );
 
-  const saveMeal = () => {
-    // CALL API TO SAVE MEAL
+  const isFormValid =
+    mealForm.name.trim() !== '' &&
+    FIELDS.every(
+      (f) =>
+        !isNaN(parseFloat(String(mealForm[f.key as keyof Omit<Meal, 'id'>]))),
+    );
+
+  const saveMeal = async () => {
+    await updateRequest<Meal>(
+      `meals${!!isEditing ? `/${mealForm.id}` : ''}`,
+      !!isEditing,
+      mealForm,
+    );
     console.log('Saving meal:', mealForm);
     setMealModalOpen(false);
   };
@@ -79,9 +88,8 @@ const MealModal: React.FC<MealModalProps> = ({
                 step="0.1"
                 min="0"
                 value={mealForm[f.key]}
-                onChange={(e) =>
-                  setMealField(f.key, parseFloat(e.target.value) || 0)
-                }
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => setMealField(f.key, e.target.value)}
                 className="input-field font-mono"
               />
             </div>
@@ -92,7 +100,11 @@ const MealModal: React.FC<MealModalProps> = ({
           <button onClick={() => setMealModalOpen(false)} className="btn-ghost">
             {formatMessage(common.cancel)}
           </button>
-          <button onClick={saveMeal} className="btn-primary">
+          <button
+            onClick={saveMeal}
+            disabled={!isFormValid}
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             {formatMessage(common.save)}
           </button>
         </div>
