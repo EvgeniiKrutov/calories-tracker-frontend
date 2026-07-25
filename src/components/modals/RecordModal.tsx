@@ -19,12 +19,18 @@ interface RecordForm {
   grams: number | string;
 }
 
+/**
+ * Records are day-granular. The BE stores them at midnight UTC, so read the
+ * date part straight off the ISO string rather than shifting into local time.
+ */
 const toInputDate = (iso: string) => {
   const parsed = new Date(iso);
   if (isNaN(parsed.getTime())) return '';
-  const offset = parsed.getTimezoneOffset() * 60_000;
-  return new Date(parsed.getTime() - offset).toISOString().slice(0, 16);
+  return parsed.toISOString().slice(0, 10);
 };
+
+/** Midnight UTC on the picked day — the time component is not user-editable. */
+const toIsoDate = (inputDate: string) => `${inputDate}T00:00:00.000Z`;
 
 const emptyRecordForm: RecordForm = {
   mealId: '',
@@ -84,7 +90,7 @@ const RecordModal: React.FC<RecordModalProps> = ({
       userId: CURRENT_USER_ID,
       mealId: recordForm.mealId,
       category: recordForm.category,
-      date: new Date(recordForm.date).toISOString(),
+      date: toIsoDate(recordForm.date),
       grams,
     };
 
@@ -144,7 +150,7 @@ const RecordModal: React.FC<RecordModalProps> = ({
         <div>
           <label className="label">{formatMessage(common.date)}</label>
           <input
-            type="datetime-local"
+            type="date"
             value={recordForm.date}
             onChange={(e) => setRecordField('date', e.target.value)}
             className="input-field [color-scheme:dark]"

@@ -4,7 +4,7 @@ import PaginationControls from '@/components/PaginationControls';
 import Modal from '@/components/Modal';
 import type { Meal } from '@/types';
 import { useAppIntl } from '@/hooks/useAppIntl';
-import { getRequest } from '@/utils/requests';
+import { deleteRequest, getRequest } from '@/utils/requests';
 import MealModal from '@/components/modals/MealModal';
 import NoData from '@/components/NoData';
 
@@ -39,9 +39,10 @@ export default function Meals() {
     setModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    setMeals((prev) => prev.filter((m) => m.id !== id));
+  const handleDelete = async (id: string) => {
+    await deleteRequest(`meals/${id}`);
     setDeleteId(null);
+    await fetchMeals();
   };
 
   const closeModal = async (mode: boolean) => {

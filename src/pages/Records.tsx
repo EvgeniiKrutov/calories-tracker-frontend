@@ -55,17 +55,14 @@ export default function Records() {
     await fetchRecords();
   };
 
+  // Records are stored at midnight UTC, so read them back in UTC to avoid
+  // slipping to the previous day in behind-UTC timezones.
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString('en-GB', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
-    });
-
-  const fmtTime = (iso: string) =>
-    new Date(iso).toLocaleTimeString('en-GB', {
-      hour: '2-digit',
-      minute: '2-digit',
+      timeZone: 'UTC',
     });
 
   return (
@@ -107,6 +104,9 @@ export default function Records() {
                   {formatMessage(common.fat)}
                 </th>
                 <th className="table-head-right">
+                  {formatMessage(common.saturatedFat)}
+                </th>
+                <th className="table-head-right">
                   {formatMessage(common.sugar)}
                 </th>
                 <th className="table-head-right">
@@ -123,14 +123,11 @@ export default function Records() {
               </tr>
             </thead>
             <tbody className="divide-y divide-bg-border">
-              {records.length === 0 && <NoData colSpan={11} />}
+              {records.length === 0 && <NoData colSpan={12} />}
               {records.map((r) => (
                 <tr key={r.id} className="hover:bg-bg-subtle/40 group">
                   <td className="table-cell whitespace-nowrap">
                     <span className="text-text-primary">{fmtDate(r.date)}</span>
-                    <span className="ml-2 font-mono text-[11px] text-text-tertiary">
-                      {fmtTime(r.date)}
-                    </span>
                   </td>
                   <td className="table-cell">
                     <span className="text-text-primary font-medium">
@@ -155,6 +152,9 @@ export default function Records() {
                   </td>
                   <td className="table-cell text-right font-mono text-sm text-text-secondary">
                     {r.fat.toFixed(1)}
+                  </td>
+                  <td className="table-cell text-right font-mono text-sm text-text-secondary">
+                    {r.saturatedFat.toFixed(1)}
                   </td>
                   <td className="table-cell text-right font-mono text-sm text-text-secondary">
                     {r.sugar.toFixed(1)}

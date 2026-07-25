@@ -24,6 +24,20 @@ export interface RecordPayload {
   grams: number;
 }
 
+/** Response of GET /records/summary — nutrition totals for one user and day. */
+export interface DailySummary {
+  userId: string;
+  date: string;
+  kcal: number;
+  fat: number;
+  saturatedFat: number;
+  protein: number;
+  salt: number;
+  sugar: number;
+  carb: number;
+  fibre: number;
+}
+
 export interface Meal {
   id: string;
   name: string;

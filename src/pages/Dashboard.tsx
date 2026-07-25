@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   AreaChart,
   Area,
@@ -9,11 +9,25 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
-import { Flame, Beef, Wheat, Droplets, Settings, Plus } from 'lucide-react';
+import {
+  Flame,
+  Beef,
+  Wheat,
+  Droplets,
+  Leaf,
+  Settings,
+  Plus,
+} from 'lucide-react';
 import { mockRecords } from '@/data/mock';
 import { useAppIntl } from '@/hooks/useAppIntl';
 import Modal from '@/components/Modal';
 import RecordModal from '@/components/modals/RecordModal';
+import type { LucideIcon } from 'lucide-react';
+import type { MessageDescriptor } from 'react-intl';
+import type { DailySummary, NutritionKey } from '@/types';
+import { getOneRequest } from '@/utils/requests';
+import { CURRENT_USER_ID } from '@/utils/user';
+import { commonMessages } from '@/locales/en';
 
 const COLORS = {
   kcal: '#7c6aef',
@@ -23,6 +37,7 @@ const COLORS = {
   sugar: '#f472b6',
   salt: '#06b6d4',
   saturatedFat: '#fb923c',
+  fibre: '#a3e635',
 };
 
 const tooltipStyle = {
@@ -45,6 +60,89 @@ const axisStyle = {
   fontSize: 11,
   fontFamily: 'JetBrains Mono',
 };
+
+interface IntakeRow {
+  key: NutritionKey;
+  label: MessageDescriptor;
+  icon: LucideIcon;
+  color: string;
+  decimals: number;
+  /** Whether the value is a weight and needs the grams suffix. */
+  unit: boolean;
+}
+
+/** Rows of the Today's Intake card, in display order. */
+const INTAKE_ROWS: IntakeRow[] = [
+  {
+    key: 'kcal',
+    label: commonMessages.calories,
+    icon: Flame,
+    color: COLORS.kcal,
+    decimals: 0,
+    unit: false,
+  },
+  {
+    key: 'protein',
+    label: commonMessages.protein,
+    icon: Beef,
+    color: COLORS.protein,
+    decimals: 0,
+    unit: true,
+  },
+  {
+    key: 'carb',
+    label: commonMessages.carbs,
+    icon: Wheat,
+    color: COLORS.carb,
+    decimals: 0,
+    unit: true,
+  },
+  {
+    key: 'fat',
+    label: commonMessages.fat,
+    icon: Droplets,
+    color: COLORS.fat,
+    decimals: 0,
+    unit: true,
+  },
+  {
+    key: 'saturatedFat',
+    label: commonMessages.saturatedFat,
+    icon: Droplets,
+    color: COLORS.saturatedFat,
+    decimals: 1,
+    unit: true,
+  },
+  {
+    key: 'fibre',
+    label: commonMessages.fibre,
+    icon: Leaf,
+    color: COLORS.fibre,
+    decimals: 1,
+    unit: true,
+  },
+  {
+    key: 'salt',
+    label: commonMessages.salt,
+    icon: Droplets,
+    color: COLORS.salt,
+    decimals: 1,
+    unit: true,
+  },
+];
+
+const emptySummary = (date: string): DailySummary => ({
+  userId: CURRENT_USER_ID,
+  date,
+  kcal: 0,
+  fat: 0,
+  saturatedFat: 0,
+  protein: 0,
+  salt: 0,
+  sugar: 0,
+  carb: 0,
+  fibre: 0,
+});
 
 export default function Dashboard() {
   const { formatMessage, common } = useAppIntl();
@@ -101,23 +199,24 @@ export default function Dashboard() {
       }));
   }, []);
 
-  const categoryData = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    const todayRecords = mockRecords.filter(
-      (r) => r.date.slice(0, 10) === today,
-    );
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const [todaysIntake, setTodaysIntake] = useState<DailySummary>(() =>
+    emptySummary(today),
+  );
 
-    return todayRecords.reduce(
-      (acc, r) => ({
-        kcal: acc.kcal + r.kcal,
-        protein: acc.protein + r.protein,
-        carb: acc.carb + r.carb,
-        fat: acc.fat + r.fat,
-        salt: acc.salt + r.salt,
-      }),
-      { kcal: 0, protein: 0, carb: 0, fat: 0, salt: 0 },
-    );
-  }, []);
+  const fetchTodaysIntake = async () => {
+    const summary = await getOneRequest<DailySummary>('records/summary', {
+      userId: CURRENT_USER_ID,
+      date: today,
+    });
+    setTodaysIntake(summary);
+  };
+
+  useEffect(() => {
+    // Re-read once the record modal closes, since a new record changes the total.
+    if (recordModalOpen) return;
+    fetchTodaysIntake();
+  }, [today, recordModalOpen]);
 
   const unhealthyData = useMemo(() => {
     const grouped: Record<
@@ -164,8 +263,6 @@ export default function Dashboard() {
     };
   }, []);
 
-  console.log(dailyData);
-
   return (
     <div className="space-y-5">
       <div>
@@ -180,117 +277,31 @@ export default function Dashboard() {
             {formatMessage(common.todaysIntake)}
           </h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{
-                    backgroundColor: `${COLORS.kcal}18`,
-                    color: COLORS.kcal,
-                  }}
-                >
-                  <Flame className="h-4 w-4" />
+            {INTAKE_ROWS.map(
+              ({ key, label, icon: Icon, color, decimals, unit }) => (
+                <div key={key} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="flex h-9 w-9 items-center justify-center rounded-lg"
+                      style={{ backgroundColor: `${color}18`, color }}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <span className="text-sm text-text-secondary">
+                      {formatMessage(label)}
+                    </span>
+                  </div>
+                  <span className="font-mono text-xl font-bold text-text-primary">
+                    {todaysIntake[key].toFixed(decimals)}
+                    {unit && (
+                      <span className="text-sm text-text-tertiary ml-1">
+                        {formatMessage(common.grams)}
+                      </span>
+                    )}
+                  </span>
                 </div>
-                <span className="text-sm text-text-secondary">
-                  {formatMessage(common.calories)}
-                </span>
-              </div>
-              <span className="font-mono text-xl font-bold text-text-primary">
-                {Math.round(categoryData.kcal)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{
-                    backgroundColor: `${COLORS.protein}18`,
-                    color: COLORS.protein,
-                  }}
-                >
-                  <Beef className="h-4 w-4" />
-                </div>
-                <span className="text-sm text-text-secondary">
-                  {formatMessage(common.protein)}
-                </span>
-              </div>
-              <span className="font-mono text-xl font-bold text-text-primary">
-                {Math.round(categoryData.protein)}
-                <span className="text-sm text-text-tertiary ml-1">
-                  {formatMessage(common.grams)}
-                </span>
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{
-                    backgroundColor: `${COLORS.carb}18`,
-                    color: COLORS.carb,
-                  }}
-                >
-                  <Wheat className="h-4 w-4" />
-                </div>
-                <span className="text-sm text-text-secondary">
-                  {formatMessage(common.carbs)}
-                </span>
-              </div>
-              <span className="font-mono text-xl font-bold text-text-primary">
-                {Math.round(categoryData.carb)}
-                <span className="text-sm text-text-tertiary ml-1">
-                  {formatMessage(common.grams)}
-                </span>
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{
-                    backgroundColor: `${COLORS.fat}18`,
-                    color: COLORS.fat,
-                  }}
-                >
-                  <Droplets className="h-4 w-4" />
-                </div>
-                <span className="text-sm text-text-secondary">
-                  {formatMessage(common.fat)}
-                </span>
-              </div>
-              <span className="font-mono text-xl font-bold text-text-primary">
-                {Math.round(categoryData.fat)}
-                <span className="text-sm text-text-tertiary ml-1">
-                  {formatMessage(common.grams)}
-                </span>
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{
-                    backgroundColor: `${COLORS.salt}18`,
-                    color: COLORS.salt,
-                  }}
-                >
-                  <Droplets className="h-4 w-4" />
-                </div>
-                <span className="text-sm text-text-secondary">
-                  {formatMessage(common.salt)}
-                </span>
-              </div>
-              <span className="font-mono text-xl font-bold text-text-primary">
-                {categoryData.salt.toFixed(1)}
-                <span className="text-sm text-text-tertiary ml-1">
-                  {formatMessage(common.grams)}
-                </span>
-              </span>
-            </div>
+              ),
+            )}
           </div>
         </div>
 

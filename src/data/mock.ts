@@ -514,11 +514,11 @@ export const CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Snack'] as const;
 
 export const FIELDS = [
   { key: 'kcal' as const, label: 'Calories', unit: 'kcal' },
-  { key: 'protein' as const, label: 'Protein', unit: 'g' },
-  { key: 'carb' as const, label: 'Carbs', unit: 'g' },
   { key: 'fat' as const, label: 'Fat', unit: 'g' },
   { key: 'saturatedFat' as const, label: 'Sat. Fat', unit: 'g' },
+  { key: 'carb' as const, label: 'Carbs', unit: 'g' },
   { key: 'sugar' as const, label: 'Sugar', unit: 'g' },
+  { key: 'protein' as const, label: 'Protein', unit: 'g' },
   { key: 'salt' as const, label: 'Salt', unit: 'g' },
   { key: 'fibre' as const, label: 'Fibre', unit: 'g' },
 ];
