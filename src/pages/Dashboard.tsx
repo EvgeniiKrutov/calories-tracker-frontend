@@ -18,12 +18,13 @@ import {
   Settings,
   Plus,
 } from 'lucide-react';
-import { mockRecords } from '@/data/mock';
 import { useAppIntl } from '@/hooks/useAppIntl';
+import { useChartData } from '@/hooks/useChartData';
 import Modal from '@/components/Modal';
 import RecordModal from '@/components/modals/RecordModal';
 import type { LucideIcon } from 'lucide-react';
 import type { MessageDescriptor } from 'react-intl';
+import RangeSelector from '@/components/RangeSelector';
 import type { DailySummary, NutritionKey } from '@/types';
 import { getOneRequest } from '@/utils/requests';
 import { CURRENT_USER_ID } from '@/utils/user';
@@ -157,9 +158,16 @@ export default function Dashboard() {
   const [limitsForm, setLimitsForm] = useState(limits);
 
   const [recordModalOpen, setRecordModalOpen] = useState(false);
+  /** Bumped whenever a record was possibly written, to re-read the BE data. */
+  const [dataVersion, setDataVersion] = useState(0);
 
   const openRecordModal = () => {
     setRecordModalOpen(true);
+  };
+
+  const closeRecordModal = () => {
+    setRecordModalOpen(false);
+    setDataVersion((version) => version + 1);
   };
 
   const openLimitsModal = () => {
@@ -171,33 +179,6 @@ export default function Dashboard() {
     setLimits(limitsForm);
     setLimitsModalOpen(false);
   };
-
-  const dailyData = useMemo(() => {
-    const grouped: Record<
-      string,
-      { kcal: number; protein: number; carb: number; fat: number }
-    > = {};
-    mockRecords.forEach((r) => {
-      const day = r.date.slice(0, 10);
-      if (!grouped[day])
-        grouped[day] = { kcal: 0, protein: 0, carb: 0, fat: 0 };
-      grouped[day].kcal += r.kcal;
-      grouped[day].protein += r.protein;
-      grouped[day].carb += r.carb;
-      grouped[day].fat += r.fat;
-    });
-    return Object.entries(grouped)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, v]) => ({
-        date: new Date(date)
-          .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })
-          .replace('/', '.'),
-        kcal: Math.round(v.kcal),
-        protein: Math.round(v.protein),
-        carb: Math.round(v.carb),
-        fat: Math.round(v.fat),
-      }));
-  }, []);
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const [todaysIntake, setTodaysIntake] = useState<DailySummary>(() =>
@@ -213,55 +194,23 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    // Re-read once the record modal closes, since a new record changes the total.
-    if (recordModalOpen) return;
     fetchTodaysIntake();
-  }, [today, recordModalOpen]);
+  }, [today, dataVersion]);
 
-  const unhealthyData = useMemo(() => {
-    const grouped: Record<
-      string,
-      { saturatedFat: number; sugar: number; salt: number }
-    > = {};
-    mockRecords.forEach((r) => {
-      const day = r.date.slice(0, 10);
-      if (!grouped[day]) grouped[day] = { saturatedFat: 0, sugar: 0, salt: 0 };
-      grouped[day].saturatedFat += r.saturatedFat;
-      grouped[day].sugar += r.sugar;
-      grouped[day].salt += r.salt;
-    });
-    return Object.entries(grouped)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, v]) => ({
-        date: new Date(date)
-          .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })
-          .replace('/', '.'),
-        saturatedFat: Math.round(v.saturatedFat * 10) / 10,
-        sugar: Math.round(v.sugar * 10) / 10,
-        salt: Math.round(v.salt * 10) / 10,
-      }));
-  }, []);
-
-  const totals = useMemo(() => {
-    const sum = mockRecords.reduce(
-      (acc, r) => ({
-        kcal: acc.kcal + r.kcal,
-        protein: acc.protein + r.protein,
-        carb: acc.carb + r.carb,
-        fat: acc.fat + r.fat,
-      }),
-      { kcal: 0, protein: 0, carb: 0, fat: 0 },
-    );
-    const days = new Set(mockRecords.map((r) => r.date.slice(0, 10))).size;
-    return {
-      avgKcal: Math.round(sum.kcal / days),
-      avgProtein: Math.round(sum.protein / days),
-      avgCarb: Math.round(sum.carb / days),
-      avgFat: Math.round(sum.fat / days),
-      total: mockRecords.length,
-      days,
-    };
-  }, []);
+  const [kcalRange, setKcalRange, kcalChartData] = useChartData(
+    'kcal',
+    dataVersion,
+  );
+  const [saturatedFatRange, setSaturatedFatRange, saturatedFatChartData] =
+    useChartData('saturatedFat', dataVersion);
+  const [sugarRange, setSugarRange, sugarChartData] = useChartData(
+    'sugar',
+    dataVersion,
+  );
+  const [saltRange, setSaltRange, saltChartData] = useChartData(
+    'salt',
+    dataVersion,
+  );
 
   return (
     <div className="space-y-5">
@@ -412,12 +361,15 @@ export default function Dashboard() {
 
         {/* Calorie trend */}
         <div className="card p-4 lg:col-span-3">
-          <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            {formatMessage(common.dailyCalories)}
-          </h3>
-          <div className="h-56 lg:h-64">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+              {formatMessage(common.dailyCalories)}
+            </h3>
+            <RangeSelector value={kcalRange} onChange={setKcalRange} />
+          </div>
+          <div className="h-80 lg:h-96">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={dailyData}>
+              <AreaChart data={kcalChartData}>
                 <defs>
                   <linearGradient id="kcalGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop
@@ -459,7 +411,7 @@ export default function Dashboard() {
                 />
                 <Area
                   type="monotone"
-                  dataKey="kcal"
+                  dataKey="value"
                   stroke={COLORS.kcal}
                   fill="url(#kcalGradient)"
                   strokeWidth={2}
@@ -475,12 +427,18 @@ export default function Dashboard() {
       <div className="grid gap-3 lg:grid-cols-3">
         {/* Daily Saturated Fat */}
         <div className="card p-4">
-          <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            {formatMessage(common.dailySaturatedFat)}
-          </h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+              {formatMessage(common.dailySaturatedFat)}
+            </h3>
+            <RangeSelector
+              value={saturatedFatRange}
+              onChange={setSaturatedFatRange}
+            />
+          </div>
           <div className="h-56 lg:h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={unhealthyData}>
+              <AreaChart data={saturatedFatChartData}>
                 <defs>
                   <linearGradient
                     id="saturatedFatGradient"
@@ -528,7 +486,7 @@ export default function Dashboard() {
                 />
                 <Area
                   type="monotone"
-                  dataKey="saturatedFat"
+                  dataKey="value"
                   stroke={COLORS.saturatedFat}
                   fill="url(#saturatedFatGradient)"
                   strokeWidth={2}
@@ -541,12 +499,15 @@ export default function Dashboard() {
 
         {/* Daily Sugar */}
         <div className="card p-4">
-          <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            {formatMessage(common.dailySugar)}
-          </h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+              {formatMessage(common.dailySugar)}
+            </h3>
+            <RangeSelector value={sugarRange} onChange={setSugarRange} />
+          </div>
           <div className="h-56 lg:h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={unhealthyData}>
+              <AreaChart data={sugarChartData}>
                 <defs>
                   <linearGradient
                     id="sugarGradient"
@@ -594,7 +555,7 @@ export default function Dashboard() {
                 />
                 <Area
                   type="monotone"
-                  dataKey="sugar"
+                  dataKey="value"
                   stroke={COLORS.sugar}
                   fill="url(#sugarGradient)"
                   strokeWidth={2}
@@ -607,12 +568,15 @@ export default function Dashboard() {
 
         {/* Daily Salt */}
         <div className="card p-4">
-          <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            {formatMessage(common.dailySalt)}
-          </h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+              {formatMessage(common.dailySalt)}
+            </h3>
+            <RangeSelector value={saltRange} onChange={setSaltRange} />
+          </div>
           <div className="h-56 lg:h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={unhealthyData}>
+              <AreaChart data={saltChartData}>
                 <defs>
                   <linearGradient id="saltGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop
@@ -654,7 +618,7 @@ export default function Dashboard() {
                 />
                 <Area
                   type="monotone"
-                  dataKey="salt"
+                  dataKey="value"
                   stroke={COLORS.salt}
                   fill="url(#saltGradient)"
                   strokeWidth={2}
@@ -789,10 +753,7 @@ export default function Dashboard() {
 
       {/* Record Modal */}
       {recordModalOpen && (
-        <RecordModal
-          isEditing={false}
-          setRecordModalOpen={(isOpen) => setRecordModalOpen(isOpen)}
-        />
+        <RecordModal isEditing={false} setRecordModalOpen={closeRecordModal} />
       )}
     </div>
   );
