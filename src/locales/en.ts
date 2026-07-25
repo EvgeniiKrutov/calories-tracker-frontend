@@ -62,6 +62,11 @@ export const commonMessages = defineMessages({
   meal: { id: 'common.meal', defaultMessage: 'Meal' },
   selectMeal: { id: 'common.selectMeal', defaultMessage: 'Select a meal' },
   category: { id: 'common.category', defaultMessage: 'Category' },
+  amount: { id: 'common.amount', defaultMessage: 'Amount' },
+  nutritionPreview: {
+    id: 'common.nutritionPreview',
+    defaultMessage: 'Nutrition for this amount',
+  },
   // Meals
   addMeal: { id: 'common.addMeal', defaultMessage: 'Add Meal' },
   newMeal: { id: 'common.newMeal', defaultMessage: 'New Meal' },

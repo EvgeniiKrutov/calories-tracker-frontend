@@ -5,25 +5,10 @@ import PaginationControls from '@/components/PaginationControls';
 import type { NutritionRecord } from '@/types';
 import { useAppIntl } from '@/hooks/useAppIntl';
 import RecordModal from '@/components/modals/RecordModal';
-import { getRequest } from '@/utils/requests';
+import { deleteRequest, getRequest } from '@/utils/requests';
 import NoData from '@/components/NoData';
 
 const PAGE_SIZE = 20;
-
-const emptyForm: NutritionRecord = {
-  id: '',
-  mealName: '',
-  category: 'Breakfast',
-  date: new Date().toISOString().slice(0, 16),
-  kcal: 0,
-  fat: 0,
-  saturatedFat: 0,
-  protein: 0,
-  salt: 0,
-  sugar: 0,
-  carb: 0,
-  fibre: 0,
-};
 
 export default function Records() {
   const { formatMessage, common } = useAppIntl();
@@ -31,8 +16,7 @@ export default function Records() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState(emptyForm);
+  const [editRecord, setEditRecord] = useState<NutritionRecord | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const fetchRecords = async () => {
@@ -51,20 +35,19 @@ export default function Records() {
   }, [page, modalOpen]);
 
   const openCreate = () => {
-    setEditId(null);
-    setForm({ ...emptyForm, date: new Date().toISOString().split('T')[0] });
+    setEditRecord(null);
     setModalOpen(true);
   };
 
   const openEdit = (r: NutritionRecord) => {
-    setEditId(r.id);
-    setForm({ ...r, date: r.date.split('T')[0] });
+    setEditRecord(r);
     setModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    setRecords((prev) => prev.filter((r) => r.id !== id));
+  const handleDelete = async (id: string) => {
+    await deleteRequest(`records/${id}`);
     setDeleteId(null);
+    await fetchRecords();
   };
 
   const closeModal = async (mode: boolean) => {
@@ -109,6 +92,9 @@ export default function Records() {
                 <th className="table-head">{formatMessage(common.date)}</th>
                 <th className="table-head">{formatMessage(common.meal)}</th>
                 <th className="table-head-right">
+                  {formatMessage(common.amount)}
+                </th>
+                <th className="table-head-right">
                   {formatMessage(common.kcal)}
                 </th>
                 <th className="table-head-right">
@@ -137,7 +123,7 @@ export default function Records() {
               </tr>
             </thead>
             <tbody className="divide-y divide-bg-border">
-              {records.length === 0 && <NoData />}
+              {records.length === 0 && <NoData colSpan={11} />}
               {records.map((r) => (
                 <tr key={r.id} className="hover:bg-bg-subtle/40 group">
                   <td className="table-cell whitespace-nowrap">
@@ -150,6 +136,13 @@ export default function Records() {
                     <span className="text-text-primary font-medium">
                       {r.mealName}
                     </span>
+                    <span className="ml-2 text-[11px] text-text-tertiary">
+                      {r.category}
+                    </span>
+                  </td>
+                  <td className="table-cell text-right font-mono text-sm text-text-secondary">
+                    {Math.round(r.grams)}
+                    {formatMessage(common.grams)}
                   </td>
                   <td className="table-cell text-right font-mono text-sm font-medium text-accent-text">
                     {Math.round(r.kcal)}
@@ -204,8 +197,8 @@ export default function Records() {
 
       {modalOpen && (
         <RecordModal
-          isEditing={!!editId}
-          recordToEdit={form}
+          isEditing={!!editRecord}
+          recordToEdit={editRecord ?? undefined}
           setRecordModalOpen={closeModal}
         />
       )}
