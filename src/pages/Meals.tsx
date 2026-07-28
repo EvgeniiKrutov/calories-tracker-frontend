@@ -8,7 +8,7 @@ import { deleteRequest, getRequest } from '@/utils/requests';
 import MealModal from '@/components/modals/MealModal';
 import NoData from '@/components/NoData';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export default function Meals() {
   const { formatMessage, common } = useAppIntl();

@@ -67,6 +67,8 @@ export const commonMessages = defineMessages({
   },
   meal: { id: 'common.meal', defaultMessage: 'Meal' },
   selectMeal: { id: 'common.selectMeal', defaultMessage: 'Select a meal' },
+  searchMeals: { id: 'common.searchMeals', defaultMessage: 'Search meals…' },
+  noMealsFound: { id: 'common.noMealsFound', defaultMessage: 'No meals found' },
   category: { id: 'common.category', defaultMessage: 'Category' },
   amount: { id: 'common.amount', defaultMessage: 'Amount' },
   nutritionPreview: {

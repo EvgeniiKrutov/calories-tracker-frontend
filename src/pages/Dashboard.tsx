@@ -15,6 +15,7 @@ import {
   Wheat,
   Droplets,
   Leaf,
+  Candy,
   Settings,
   Plus,
 } from 'lucide-react';
@@ -94,6 +95,14 @@ const INTAKE_ROWS: IntakeRow[] = [
     icon: Wheat,
     color: COLORS.carb,
     decimals: 0,
+    unit: true,
+  },
+  {
+    key: 'sugar',
+    label: commonMessages.sugar,
+    icon: Candy,
+    color: COLORS.sugar,
+    decimals: 1,
     unit: true,
   },
   {

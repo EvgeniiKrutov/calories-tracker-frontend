@@ -8,7 +8,7 @@ import RecordModal from '@/components/modals/RecordModal';
 import { deleteRequest, getRequest } from '@/utils/requests';
 import NoData from '@/components/NoData';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export default function Records() {
   const { formatMessage, common } = useAppIntl();
